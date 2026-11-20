@@ -1,0 +1,96 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "bcd87718-1855-4b00-a9f5-a6d6fca4e896",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "contractions": {
+      "name": "contractions",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "ended_at": {
+          "name": "ended_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "intensity": {
+          "name": "intensity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "note": {
+          "name": "note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "contractions_started_at_idx": {
+          "name": "contractions_started_at_idx",
+          "columns": [
+            "started_at"
+          ],
+          "isUnique": false
+        },
+        "contractions_single_active_idx": {
+          "name": "contractions_single_active_idx",
+          "columns": [
+            "(\"ended_at\" IS NULL)"
+          ],
+          "isUnique": true,
+          "where": "\"contractions\".\"ended_at\" IS NULL"
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "contractions_end_after_start": {
+          "name": "contractions_end_after_start",
+          "value": "\"contractions\".\"ended_at\" IS NULL OR \"contractions\".\"ended_at\" >= \"contractions\".\"started_at\""
+        },
+        "contractions_intensity_range": {
+          "name": "contractions_intensity_range",
+          "value": "\"contractions\".\"intensity\" IS NULL OR \"contractions\".\"intensity\" BETWEEN 1 AND 3"
+        }
+      }
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {
+      "contractions_single_active_idx": {
+        "columns": {
+          "(\"ended_at\" IS NULL)": {
+            "isExpression": true
+          }
+        }
+      }
+    }
+  }
+}

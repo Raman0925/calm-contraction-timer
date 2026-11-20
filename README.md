@@ -42,6 +42,7 @@ npm run android      # build and install on a device or emulator
 | `npm test`               | Jest unit and component tests                                 |
 | `npm run check:spdx`     | Ensures every source file has the SPDX header                 |
 | `npm run licenses:check` | Fails if a production dependency has a non-permissive licence |
+| `npm run db:generate`    | Generates a migration after editing `src/core/db/schema.ts`   |
 
 ## Project structure
 
@@ -49,6 +50,7 @@ npm run android      # build and install on a device or emulator
 src/
   app/          App root, navigation, error boundaries
   core/
+    db/         Drizzle schema, generated migrations, op-sqlite client
     design/     Tokens, light/dark/night themes, shared components (the only place that imports Paper)
     i18n/       i18next setup and locale strings
     storage/    MMKV settings storage
@@ -62,7 +64,7 @@ Paper imports outside the design system.
 ## Roadmap
 
 1. ✅ Project setup, design system, themes, navigation, i18n, CI
-2. SQLite + Drizzle schema, repositories, `computeStats`
+2. ✅ SQLite + Drizzle schema, migrations, repositories, `computeStats`
 3. Timer screen, ongoing notification, crash/kill recovery, keep-awake
 4. History, session detail, charts
 5. CSV/PDF export, settings, onboarding and disclaimer
@@ -70,6 +72,20 @@ Paper imports outside the design system.
 7. Consent (UMP) and a single banner on History for free users
 8. Google Drive backup and restore (Pro)
 9. Live Update notifications, accessibility and performance passes, release pipeline
+
+## Database
+
+Contractions live in an on-device SQLite database (op-sqlite + Drizzle). Times are
+stored as UTC epoch milliseconds, so time-zone and daylight-saving changes never alter
+data. Sessions are not stored; they are derived by grouping contractions with no gap
+longer than 6 hours.
+
+To change the schema, edit `src/core/db/schema.ts` and run `npm run db:generate`.
+Never edit generated files in `src/core/db/migrations/`. The SQL is inlined at build
+time, so if one ever has to change, restart Metro with `npm start -- --reset-cache`.
+
+The app applies pending migrations on start, each in its own transaction. Tests run the
+same SQL bundle against sql.js, including an upgrade from every previous version.
 
 ## Contributing
 

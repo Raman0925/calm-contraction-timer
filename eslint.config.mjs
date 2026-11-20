@@ -10,7 +10,7 @@ const FUNCTIONAL_COLOUR = '/^(rgb|rgba|hsl|hsla)\\(/';
 
 export default tseslint.config(
   {
-    ignores: ['node_modules/', 'android/', 'coverage/', '.bundle/'],
+    ignores: ['node_modules/', 'android/', 'coverage/', '.bundle/', 'src/core/db/migrations/'],
   },
   ...reactNativeBlocks,
   {

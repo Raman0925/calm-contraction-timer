@@ -2,6 +2,8 @@
 module.exports = {
   presets: ['module:@react-native/babel-preset'],
   plugins: [
+    // Inlines generated migration SQL into the bundle (see src/core/db/migrations).
+    ['inline-import', { extensions: ['.sql'] }],
     [
       'module-resolver',
       {
