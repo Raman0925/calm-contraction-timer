@@ -9,6 +9,11 @@ updates:
     commit-message:
       prefix: build
       include: scope
+    ignore:
+      # Major upgrades are done by hand: the React Native template pins compatible
+      # versions of Babel, Jest, TypeScript, ESLint and the CLI.
+      - dependency-name: '*'
+        update-types: [version-update:semver-major]
     groups:
       # These must move together; upgrade them with the React Native Upgrade Helper.
       react-native-core:
@@ -17,6 +22,7 @@ updates:
           - react-native
           - '@react-native/*'
           - '@react-native-community/cli*'
+          - '@babel/*'
       react-navigation:
         patterns: ['@react-navigation/*']
       dev-tooling:
@@ -29,6 +35,9 @@ updates:
     commit-message:
       prefix: build
       include: scope
+    ignore:
+      # The Gradle version is set by the React Native template; bump it with React Native.
+      - dependency-name: gradle-wrapper
   - package-ecosystem: github-actions
     directory: /
     schedule:
