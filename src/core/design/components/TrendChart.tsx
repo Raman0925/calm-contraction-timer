@@ -68,6 +68,8 @@ export function TrendChart({
     endSpacing: step / 4,
     disableScroll: true,
     isAnimated: false,
+    // No entry animation (calmer, and respects reduce motion); its timers then fire at once.
+    animationDuration: 0,
   } as const;
 
   return (

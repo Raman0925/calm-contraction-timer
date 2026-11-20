@@ -27,19 +27,21 @@ async function renderTimer(setup: Setup, preference: ThemePreference = 'light') 
 const startStop = () => screen.getByTestId('start-stop');
 const liveTimer = () => screen.getByTestId('live-timer');
 
-/** Moves the fake clock and lets the 1-second ticker pick it up. */
+/** Waits in real time; screens run real timers, as on a device. */
+async function wait(ms: number) {
+  await act(() => new Promise<void>(resolve => setTimeout(resolve, ms)));
+}
+
+/** Moves the injected clock, then lets the real 1-second ticker pick it up. */
 async function elapse(setup: Setup, ms: number) {
   setup.clock.advance(ms);
-  await act(async () => {
-    await jest.advanceTimersByTimeAsync(SECOND_MS);
-  });
+  await wait(SECOND_MS + 100);
 }
 
 describe('TimerScreen', () => {
   let setup: Setup;
 
   beforeEach(async () => {
-    jest.useFakeTimers();
     useSettingsStore.setState({
       notificationsEnabled: true,
       notificationPermissionAsked: false,
@@ -47,10 +49,6 @@ describe('TimerScreen', () => {
       providerPhone: '',
     });
     setup = await createTestServices();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
   });
 
   it('is ready to start when idle', async () => {
@@ -119,9 +117,8 @@ describe('TimerScreen', () => {
     await elapse(setup, 3 * SECOND_MS);
     await fireEvent.press(startStop());
     await screen.findByText('Contraction stopped');
-    await act(async () => {
-      await jest.advanceTimersByTimeAsync(3 * SECOND_MS);
-    });
+    // By now the first offer's 5 s would have run out; the new one must still be showing.
+    await wait(4 * SECOND_MS);
     expect(screen.getByText('Contraction stopped')).toBeOnTheScreen();
     expect(screen.getByText('Undo')).toBeOnTheScreen();
   });
