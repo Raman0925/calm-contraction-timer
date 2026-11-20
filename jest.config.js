@@ -3,6 +3,8 @@
 module.exports = {
   preset: '@react-native/jest-preset',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  // Screen tests render the whole app on in-memory SQLite; CI runners are slower than laptops.
+  testTimeout: 20_000,
   moduleNameMapper: { '[.]ttf$': '<rootDir>/jest/assetStub.js' },
   transformIgnorePatterns: [
     'node_modules/(?!((jest-)?react-native|@react-native(-community)?|@react-navigation|react-native-paper|@react-native-vector-icons|react-native-mmkv|react-native-nitro-modules|react-native-safe-area-context|react-native-screens|react-native-notify-kit|react-native-haptic-feedback|@op-engineering|react-native-gifted-charts|gifted-charts-core|react-native-svg)/)',

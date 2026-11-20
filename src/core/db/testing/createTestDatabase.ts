@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { drizzle } from 'drizzle-orm/sql-js';
-import initSqlJs, { type Database } from 'sql.js';
+import initSqlJs, { type Database, type SqlJsStatic } from 'sql.js';
 import migrations from '../migrations/migrations';
 import { runMigrations, type MigrationBundle, type MigrationTarget } from '../migrator';
 import * as schema from '../schema';
@@ -44,12 +44,16 @@ export function bundleUpTo(upToIndex: number): MigrationBundle {
   };
 }
 
+let engine: Promise<SqlJsStatic> | undefined;
+
 /**
  * Creates an in-memory SQLite database (sql.js) migrated with the exact bundle
  * the app ships, optionally stopping after migration `upToIndex`.
  */
 export async function createTestDatabase(upToIndex?: number) {
-  const SQL = await initSqlJs();
+  // Loading the WebAssembly engine is slow; do it once per test worker.
+  engine ??= initSqlJs();
+  const SQL = await engine;
   const client = new SQL.Database();
   const target = sqlJsMigrationTarget(client);
   await runMigrations(target, upToIndex === undefined ? migrations : bundleUpTo(upToIndex));
