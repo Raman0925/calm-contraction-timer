@@ -1,0 +1,45 @@
+// SPDX-License-Identifier: Apache-2.0
+/**
+ * Fails when a source file is missing the Apache-2.0 SPDX header.
+ * Run with: node scripts/check-spdx.mjs
+ */
+import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { extname, join } from 'node:path';
+
+const HEADER = 'SPDX-License-Identifier: Apache-2.0';
+const ROOTS = ['src', 'scripts', 'jest', 'android/app/src', 'e2e'];
+const ROOT_FILES = [
+  'index.js',
+  'babel.config.js',
+  'metro.config.js',
+  'jest.config.js',
+  'jest.setup.ts',
+  'eslint.config.mjs',
+];
+const EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.mjs', '.kt', '.yaml', '.xml']);
+const SKIP_DIRS = new Set(['node_modules', 'build', 'generated', 'res']);
+
+function walk(dir) {
+  let entries;
+  try {
+    entries = readdirSync(dir);
+  } catch {
+    return [];
+  }
+  return entries.flatMap(name => {
+    const path = join(dir, name);
+    if (statSync(path).isDirectory()) {
+      return SKIP_DIRS.has(name) ? [] : walk(path);
+    }
+    return EXTENSIONS.has(extname(name)) ? [path] : [];
+  });
+}
+
+const files = [...ROOTS.flatMap(walk), ...ROOT_FILES];
+const missing = files.filter(file => !readFileSync(file, 'utf8').slice(0, 300).includes(HEADER));
+
+if (missing.length > 0) {
+  console.error(`Missing "${HEADER}" header in:\n  ${missing.join('\n  ')}`);
+  process.exit(1);
+}
+console.log(`SPDX headers present in ${files.length} files.`);

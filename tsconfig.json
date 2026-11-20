@@ -1,0 +1,22 @@
+{
+  "extends": "@react-native/typescript-config",
+  "compilerOptions": {
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@app/*": ["./src/app/*"],
+      "@core/*": ["./src/core/*"],
+      "@features/*": ["./src/features/*"]
+    }
+  },
+  "include": [
+    "./src/**/*.ts",
+    "src/**/*.tsx",
+    "index.js",
+    "jest.setup.ts",
+    "*.config.js",
+    "*.config.mjs"
+  ],
+  "exclude": ["**/node_modules", "android"]
+}

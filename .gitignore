@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build output
+build/
+.cxx/
+.kotlin/
+*.jsbundle
+*.apk
+*.aab
+/coverage
+.metro-health-check*
+
+# Android / IDE
+.gradle/
+.idea/
+.vscode/
+*.iml
+*.hprof
+local.properties
+captures/
+
+# Secrets: never commit signing keys, service accounts or real ad/billing IDs
+*.keystore
+*.jks
+!android/app/debug.keystore
+keystore.properties
+play-service-account*.json
+google-services.json
+*.p12
+*.pem
+.env
+.env.*
+
+# Logs and OS files
+npm-debug.log*
+*.log
+.DS_Store
+Thumbs.db
+
+# Maestro
+e2e/output/
+.maestro/

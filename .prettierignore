@@ -1,0 +1,8 @@
+node_modules/
+android/
+coverage/
+package-lock.json
+CHANGELOG.md
+LICENSE
+NOTICE
+CODE_OF_CONDUCT.md
