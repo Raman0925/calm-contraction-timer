@@ -1,38 +1,61 @@
 // SPDX-License-Identifier: Apache-2.0
-import { drizzle } from 'drizzle-orm/sql-js';
-import initSqlJs, { type Database, type SqlJsStatic } from 'sql.js';
+import initSqlJs, { type Database, type SqlJsStatic, type SqlValue as SqlJsValue } from 'sql.js';
 import migrations from '../migrations/migrations';
-import { runMigrations, type MigrationBundle, type MigrationTarget } from '../migrator';
-import * as schema from '../schema';
+import { runMigrations, type MigrationBundle, type SqlValue } from '../migrator';
+import { drizzleFor, type SqlConnection } from '../sqlDriver';
+
+let engine: Promise<SqlJsStatic> | undefined;
+
+const toSqlJs = (params: SqlValue[] | undefined): SqlJsValue[] => params ?? [];
 
 /**
- * Adapts a sql.js database to the migrator, with the same all-or-nothing
- * batch semantics as op-sqlite's `executeBatch`.
+ * An op-sqlite-shaped connection over sql.js, so tests run the same Drizzle
+ * adapter and migrator as the device. Each call yields to the event loop, like
+ * op-sqlite's async API, so interleaving bugs can show up in tests too.
  */
-export function sqlJsMigrationTarget(client: Database): MigrationTarget {
-  return {
-    execute: (sql, params) => {
-      const statement = client.prepare(sql, params);
+export function sqlJsConnection(client: Database): SqlConnection {
+  const query = (sql: string, params?: SqlValue[]) => {
+    const statement = client.prepare(sql, toSqlJs(params));
+    try {
       const rows: Record<string, unknown>[] = [];
+      const rawRows: unknown[][] = [];
       while (statement.step()) {
+        rawRows.push(statement.get());
         rows.push(statement.getAsObject());
       }
+      return { rows, rawRows };
+    } finally {
       statement.free();
-      return Promise.resolve({ rows });
-    },
-    executeBatch: commands => {
-      client.run('BEGIN');
-      try {
-        for (const [sql, params] of commands) {
-          client.run(sql, params);
+    }
+  };
+  const later = <T>(work: () => T) =>
+    new Promise<T>((resolve, reject) => {
+      setTimeout(() => {
+        try {
+          resolve(work());
+        } catch (error) {
+          reject(error instanceof Error ? error : new Error(String(error)));
         }
-        client.run('COMMIT');
-      } catch (error) {
-        client.run('ROLLBACK');
-        return Promise.reject(error instanceof Error ? error : new Error(String(error)));
-      }
-      return Promise.resolve();
-    },
+      }, 0);
+    });
+
+  return {
+    execute: (sql, params) => later(() => ({ rows: query(sql, params).rows })),
+    executeRaw: (sql, params) => later(() => ({ rawRows: query(sql, params).rawRows })),
+    // Same all-or-nothing semantics as op-sqlite's executeBatch.
+    executeBatch: commands =>
+      later(() => {
+        client.run('BEGIN');
+        try {
+          for (const [sql, params] of commands) {
+            client.run(sql, toSqlJs(params));
+          }
+          client.run('COMMIT');
+        } catch (error) {
+          client.run('ROLLBACK');
+          throw error;
+        }
+      }),
   };
 }
 
@@ -44,8 +67,6 @@ export function bundleUpTo(upToIndex: number): MigrationBundle {
   };
 }
 
-let engine: Promise<SqlJsStatic> | undefined;
-
 /**
  * Creates an in-memory SQLite database (sql.js) migrated with the exact bundle
  * the app ships, optionally stopping after migration `upToIndex`.
@@ -55,7 +76,7 @@ export async function createTestDatabase(upToIndex?: number) {
   engine ??= initSqlJs();
   const SQL = await engine;
   const client = new SQL.Database();
-  const target = sqlJsMigrationTarget(client);
-  await runMigrations(target, upToIndex === undefined ? migrations : bundleUpTo(upToIndex));
-  return { db: drizzle(client, { schema }), client, target };
+  const connection = sqlJsConnection(client);
+  await runMigrations(connection, upToIndex === undefined ? migrations : bundleUpTo(upToIndex));
+  return { db: drizzleFor(connection), client, connection };
 }

@@ -38,7 +38,7 @@ describe('History', () => {
 
   it('shows an empty state before any contractions', async () => {
     await openHistory(setup);
-    expect(screen.getByText('No sessions yet')).toBeOnTheScreen();
+    expect(await screen.findByText('No sessions yet')).toBeOnTheScreen();
   });
 
   it('lists sessions newest first with their summary', async () => {

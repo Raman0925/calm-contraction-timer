@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { NavigationContainer } from '@react-navigation/native';
-import { act, fireEvent, render, screen, within } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react-native';
 import { AccessibilityInfo } from 'react-native';
 import { AppThemeProvider, nightTheme, type ThemePreference } from '@core/design';
 import { MINUTE_MS, SECOND_MS } from '@core/utils/time';
@@ -21,10 +21,22 @@ async function renderTimer(setup: Setup, preference: ThemePreference = 'light') 
       </TimerServicesProvider>
     </NavigationContainer>,
   );
-  await screen.findByRole('button', { name: /Start|Stop/ });
+  await waitForEnabledButton();
 }
 
-const startStop = () => screen.getByTestId('start-stop');
+/** The big button is disabled while data loads or a tap is saved; wait until it can be pressed. */
+async function waitForEnabledButton() {
+  await waitFor(() => {
+    expect(screen.getByTestId('start-stop')).toBeEnabled();
+  });
+}
+
+/** Presses Start or Stop once it can be pressed, like a person would. */
+async function pressStartStop() {
+  await waitForEnabledButton();
+  await fireEvent.press(screen.getByTestId('start-stop'));
+}
+
 const liveTimer = () => screen.getByTestId('live-timer');
 
 /** Waits in real time; screens run real timers, as on a device. */
@@ -62,7 +74,7 @@ describe('TimerScreen', () => {
   it('starts timing at once, with feedback and an Undo offer', async () => {
     const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
     await renderTimer(setup);
-    await fireEvent.press(startStop());
+    await pressStartStop();
 
     expect(await screen.findByRole('button', { name: 'Stop' })).toBeOnTheScreen();
     expect(await setup.services.repository.getActive()).not.toBeNull();
@@ -77,7 +89,7 @@ describe('TimerScreen', () => {
 
   it('undoes a Start', async () => {
     await renderTimer(setup);
-    await fireEvent.press(startStop());
+    await pressStartStop();
     await fireEvent.press(await screen.findByText('Undo'));
     expect(await screen.findByRole('button', { name: 'Start' })).toBeOnTheScreen();
     expect(await setup.services.repository.listAll()).toEqual([]);
@@ -85,10 +97,10 @@ describe('TimerScreen', () => {
 
   it('shows rest time and the recorded contraction after Stop, and undoes Stop', async () => {
     await renderTimer(setup);
-    await fireEvent.press(startStop());
+    await pressStartStop();
     await screen.findByRole('button', { name: 'Stop' });
     await elapse(setup, 65 * SECOND_MS);
-    await fireEvent.press(startStop());
+    await pressStartStop();
 
     expect(await screen.findByRole('button', { name: 'Start' })).toBeOnTheScreen();
     expect(screen.getByText('Since the last contraction started')).toBeOnTheScreen();
@@ -101,7 +113,7 @@ describe('TimerScreen', () => {
 
   it('shows the notification for the first contraction once permission is granted', async () => {
     await renderTimer(setup);
-    await fireEvent.press(startStop());
+    await pressStartStop();
     await screen.findByRole('button', { name: 'Stop' });
     await screen.findByText('Undo');
     expect(setup.notifier.last).toEqual({
@@ -112,10 +124,10 @@ describe('TimerScreen', () => {
 
   it('gives a new Undo offer its full time', async () => {
     await renderTimer(setup);
-    await fireEvent.press(startStop());
+    await pressStartStop();
     await screen.findByRole('button', { name: 'Stop' });
     await elapse(setup, 3 * SECOND_MS);
-    await fireEvent.press(startStop());
+    await pressStartStop();
     await screen.findByText('Contraction stopped');
     // By now the first offer's 5 s would have run out; the new one must still be showing.
     await wait(4 * SECOND_MS);
@@ -125,9 +137,9 @@ describe('TimerScreen', () => {
 
   it('says so when an Undo is no longer possible', async () => {
     await renderTimer(setup);
-    await fireEvent.press(startStop());
+    await pressStartStop();
     await screen.findByRole('button', { name: 'Stop' });
-    await fireEvent.press(startStop());
+    await pressStartStop();
     await screen.findByText('Contraction stopped');
     // A new contraction is started from the notification before Undo is tapped.
     await setup.services.repository.start(setup.clock.now() + SECOND_MS);
@@ -138,9 +150,9 @@ describe('TimerScreen', () => {
   it('asks for notification permission only once', async () => {
     await renderTimer(setup);
     for (let i = 0; i < 2; i += 1) {
-      await fireEvent.press(startStop());
+      await pressStartStop();
       await screen.findByRole('button', { name: 'Stop' });
-      await fireEvent.press(startStop());
+      await pressStartStop();
       await screen.findByRole('button', { name: 'Start' });
     }
     expect(setup.notifier.permissionRequests).toBe(1);
@@ -149,7 +161,7 @@ describe('TimerScreen', () => {
   it('turns the notification setting off when permission is denied', async () => {
     setup.notifier.grantPermission = false;
     await renderTimer(setup);
-    await fireEvent.press(startStop());
+    await pressStartStop();
     await screen.findByRole('button', { name: 'Stop' });
     expect(useSettingsStore.getState().notificationsEnabled).toBe(false);
   });
@@ -165,7 +177,7 @@ describe('TimerScreen', () => {
   it('keeps the screen on only during a session when enabled', async () => {
     await renderTimer(setup);
     expect(setup.keepAwake.activate).not.toHaveBeenCalled();
-    await fireEvent.press(startStop());
+    await pressStartStop();
     await screen.findByRole('button', { name: 'Stop' });
     await elapse(setup, SECOND_MS);
     expect(setup.keepAwake.activate).toHaveBeenCalled();

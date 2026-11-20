@@ -1,8 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import type { BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core';
-import type * as schema from './schema';
+import type { drizzleFor } from './sqlDriver';
 
-/** Drizzle database bound to the app schema. Async on device, sync in tests. */
-export type AppDatabase =
-  | BaseSQLiteDatabase<'async', unknown, typeof schema>
-  | BaseSQLiteDatabase<'sync', unknown, typeof schema>;
+/** Drizzle database bound to the app schema; the same type on device and in tests. */
+export type AppDatabase = ReturnType<typeof drizzleFor>;

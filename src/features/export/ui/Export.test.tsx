@@ -22,7 +22,7 @@ async function openExport(sharer: FileSharer) {
   await fireEvent.press(screen.getByRole('button', { name: /History/ }));
   await fireEvent.press(await screen.findByRole('button', { name: /3 contractions/ }));
   await fireEvent.press(await screen.findByTestId('export-session'));
-  await screen.findByTestId('export-screen');
+  await screen.findByTestId('export-csv');
 }
 
 function recordingSharer() {

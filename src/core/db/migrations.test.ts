@@ -34,38 +34,32 @@ describe('runMigrations', () => {
 
   it('enforces the schema constraints', async () => {
     const { db } = await createTestDatabase();
-    expect(() => {
-      db.insert(contractions).values({ startedAt: 10, endedAt: 5 }).run();
-    }).toThrow();
-    expect(() => {
-      db.insert(contractions).values({ startedAt: 10, intensity: 4 }).run();
-    }).toThrow();
-    db.insert(contractions).values({ startedAt: 10 }).run();
-    expect(() => {
-      db.insert(contractions).values({ startedAt: 20 }).run();
-    }).toThrow();
+    await expect(db.insert(contractions).values({ startedAt: 10, endedAt: 5 })).rejects.toThrow();
+    await expect(db.insert(contractions).values({ startedAt: 10, intensity: 4 })).rejects.toThrow();
+    await db.insert(contractions).values({ startedAt: 10 });
+    await expect(db.insert(contractions).values({ startedAt: 20 })).rejects.toThrow();
   });
 
   it('does nothing when already up to date', async () => {
-    const { db, target } = await createTestDatabase();
-    db.run(sql`INSERT INTO contractions (started_at) VALUES (1)`);
-    await runMigrations(target, migrations);
+    const { db, connection } = await createTestDatabase();
+    await db.run(sql`INSERT INTO contractions (started_at) VALUES (1)`);
+    await runMigrations(connection, migrations);
     expect(await db.select().from(contractions)).toHaveLength(1);
   });
 
   it.each(entries.map(entry => [entry.tag, entry.idx] as const))(
     'upgrades from %s to the latest version and keeps data',
     async (_tag, idx) => {
-      const { db, target } = await createTestDatabase(idx);
-      db.run(sql`INSERT INTO contractions (started_at, ended_at) VALUES (1000, 61000)`);
-      await runMigrations(target, migrations);
+      const { db, connection } = await createTestDatabase(idx);
+      await db.run(sql`INSERT INTO contractions (started_at, ended_at) VALUES (1000, 61000)`);
+      await runMigrations(connection, migrations);
       const rows = await db.select().from(contractions);
       expect(rows).toEqual([expect.objectContaining({ id: 1, startedAt: 1000, endedAt: 61000 })]);
     },
   );
 
   it('rolls back a failing migration completely so it can run again', async () => {
-    const { client, target } = await createTestDatabase(-1);
+    const { client, connection } = await createTestDatabase(-1);
     const first = entries[0]!;
     const broken = {
       journal: { entries: [first] },
@@ -74,21 +68,21 @@ describe('runMigrations', () => {
       },
     };
 
-    await expect(runMigrations(target, broken)).rejects.toThrow();
+    await expect(runMigrations(connection, broken)).rejects.toThrow();
     expect(client.exec("SELECT name FROM sqlite_master WHERE name = 'contractions'")).toEqual([]);
     expect(client.exec('SELECT count(*) FROM __app_migrations')[0]?.values).toEqual([[0]]);
 
-    await runMigrations(target, migrations);
+    await runMigrations(connection, migrations);
     expect(client.exec('SELECT count(*) FROM __app_migrations')[0]?.values).toEqual([
       [entries.length],
     ]);
   });
 
   it('reports a journal entry missing from the bundle', async () => {
-    const { target } = await createTestDatabase(-1);
+    const { connection } = await createTestDatabase(-1);
     const last = entries.at(-1)!;
     await expect(
-      runMigrations(target, { journal: { entries: [last] }, migrations: {} }),
+      runMigrations(connection, { journal: { entries: [last] }, migrations: {} }),
     ).rejects.toThrow(`Migration ${last.tag} is missing from the bundle`);
   });
 });

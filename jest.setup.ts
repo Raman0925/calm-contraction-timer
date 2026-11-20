@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
+import { configure } from '@testing-library/react-native';
 import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 import { initI18n } from './src/core/i18n';
 import { useSettingsStore } from './src/features/settings/data/settingsStore';
@@ -35,6 +36,9 @@ jest.mock('./src/core/native/NativeKeepAwake', () => ({
 }));
 
 initI18n();
+
+// Database calls are asynchronous, as on a device; give screens time when the suite runs in parallel.
+configure({ asyncUtilTimeout: 5_000 });
 
 // Most tests start after onboarding; onboarding tests reset this to null.
 beforeEach(() => {
