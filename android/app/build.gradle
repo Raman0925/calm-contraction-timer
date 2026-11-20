@@ -7,6 +7,20 @@ apply plugin: "com.facebook.react"
 def appVersionName = new groovy.json.JsonSlurper().parse(file("../../package.json")).version
 def (versionMajor, versionMinor, versionPatch) = appVersionName.tokenize(".-")[0..2].collect { it as int }
 
+// The upload key is provided only by the release workflow (see README, "Release secrets").
+// Without it, release builds are signed with the debug key for local and end-to-end testing;
+// Google Play rejects those, so they can never be published by mistake.
+def uploadStoreFile = System.getenv("CCT_UPLOAD_STORE_FILE") ?: null
+def uploadSecrets = ["CCT_UPLOAD_STORE_FILE", "CCT_UPLOAD_STORE_PASSWORD", "CCT_UPLOAD_KEY_ALIAS", "CCT_UPLOAD_KEY_PASSWORD"]
+// The release workflow sets CCT_REQUIRE_UPLOAD_KEY=true, so a missing or empty secret fails the
+// build instead of silently producing a debug-signed bundle.
+if (System.getenv("CCT_REQUIRE_UPLOAD_KEY") == "true") {
+    def missing = uploadSecrets.findAll { !System.getenv(it) }
+    if (!missing.isEmpty()) {
+        throw new GradleException("Release signing requires ${missing.join(', ')}")
+    }
+}
+
 react {
     autolinkLibrariesWithApp()
 }
@@ -32,6 +46,14 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        if (uploadStoreFile) {
+            release {
+                storeFile file(uploadStoreFile)
+                storePassword System.getenv("CCT_UPLOAD_STORE_PASSWORD")
+                keyAlias System.getenv("CCT_UPLOAD_KEY_ALIAS")
+                keyPassword System.getenv("CCT_UPLOAD_KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
@@ -39,7 +61,7 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            // Release signing is configured by the release workflow; see README.
+            signingConfig uploadStoreFile ? signingConfigs.release : signingConfigs.debug
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"

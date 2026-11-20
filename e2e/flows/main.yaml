@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: Apache-2.0
+# Onboarding -> time three contractions -> History -> CSV export.
+appId: com.calmcontractiontimer.app
+---
+- launchApp:
+    clearState: true
+    permissions:
+      notifications: allow
+- tapOn: 'Next'
+- tapOn: 'Next'
+- assertVisible: 'Before you start'
+- tapOn: 'I understand'
+- repeat:
+    times: 3
+    commands:
+      - tapOn: 'Start'
+      - extendedWaitUntil:
+          visible: 'Stop'
+          timeout: 5000
+      - tapOn: 'Stop'
+      - extendedWaitUntil:
+          visible: 'Start'
+          timeout: 5000
+- assertVisible: 'Recent contractions'
+- tapOn: 'History'
+- tapOn: '.*3 contractions.*'
+- assertVisible: 'Contractions'
+- tapOn: 'Export this session'
+- tapOn: 'Spreadsheet (CSV)'
+# The Android share sheet shows either the file name or the sheet title, depending on version.
+- extendedWaitUntil:
+    visible: '.*(contractions-.*csv|Share contractions).*'
+    timeout: 10000
+- back
+- assertVisible: 'Doctor report (PDF)'
