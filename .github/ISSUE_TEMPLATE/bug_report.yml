@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Bug report
+description: Something does not work as expected.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please do not include personal health information. For security issues use private reporting (see SECURITY.md).
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. Tap Start\n2. Lock the phone\n3. …"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      placeholder: 'e.g. 1.2.0 (Settings > About)'
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and Android version
+      placeholder: 'e.g. Pixel 8, Android 16'
+    validations:
+      required: true
