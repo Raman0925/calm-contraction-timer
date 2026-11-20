@@ -8,20 +8,12 @@ import { syncSessionNotification } from '../data/notificationSync';
 import { computeStats, type ContractionStat, type ContractionStats } from '../domain/computeStats';
 import { useCurrentSession } from './useCurrentSession';
 import { useTimerServices } from './TimerServices';
+import { useUndoOffer, type UndoOfferState } from './useUndoOffer';
 
 const RECENT_COUNT = 5;
 
-/** A message in the snackbar, with an Undo action when one is possible. */
-export interface UndoOffer {
-  /** Unique per offer, so a new offer always gets the full Undo time. */
-  id: number;
-  message: string;
-  /** Reverts the last action; resolves false if it could no longer be undone. */
-  undo?: () => Promise<boolean>;
-}
-
 /** View state for the timer screen. */
-export interface TimerViewState {
+export interface TimerViewState extends Omit<UndoOfferState, 'offer'> {
   loaded: boolean;
   /** A session is running (a contraction was recorded within the last 6 h). */
   sessionActive: boolean;
@@ -32,11 +24,8 @@ export interface TimerViewState {
   stats: ContractionStats;
   /** Up to five most recent contractions, newest first. */
   recent: ContractionStat[];
-  undoOffer: UndoOffer | null;
   busy: boolean;
   toggle: () => void;
-  undo: () => void;
-  dismissUndo: (offerId: number) => void;
 }
 
 /** View-model for the timer screen: live state, Start/Stop and Undo. */
@@ -46,20 +35,15 @@ export function useTimer(): TimerViewState {
   const { repository, notifier, haptics, clock } = services;
   const thresholds = useSettingsStore(state => state.patternThresholds);
   const { loaded, session, now } = useCurrentSession();
-  const [undoOffer, setUndoOffer] = useState<UndoOffer | null>(null);
+  const { offer, ...undoState } = useUndoOffer();
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
-  const nextOfferId = useRef(1);
 
   const stats = useMemo(
     () => computeStats(session?.contractions ?? [], thresholds, now),
     [session, thresholds, now],
   );
   const latest = stats.items.at(-1);
-
-  const offer = useCallback((message: string, undo?: () => Promise<boolean>) => {
-    setUndoOffer({ id: nextOfferId.current++, message, undo });
-  }, []);
 
   /** First session only: ask before the Undo offer, so the dialog never eats its time. */
   const askForNotificationsOnce = useCallback(async () => {
@@ -127,25 +111,6 @@ export function useTimer(): TimerViewState {
       });
   }, [repository, stats.active, start, stop]);
 
-  const undo = useCallback(() => {
-    const action = undoOffer?.undo;
-    setUndoOffer(null);
-    action?.()
-      .then(undone => {
-        if (!undone) {
-          offer(t('timer.undoFailed'));
-        }
-      })
-      .catch((error: unknown) => {
-        console.error('Undo failed', error);
-        offer(t('timer.undoFailed'));
-      });
-  }, [undoOffer, offer, t]);
-
-  const dismissUndo = useCallback((offerId: number) => {
-    setUndoOffer(current => (current?.id === offerId ? null : current));
-  }, []);
-
   return {
     loaded,
     sessionActive: session !== null,
@@ -153,10 +118,8 @@ export function useTimer(): TimerViewState {
     elapsedMs: latest ? now - latest.contraction.startedAt : null,
     stats,
     recent: stats.items.slice(-RECENT_COUNT).reverse(),
-    undoOffer,
+    ...undoState,
     busy,
     toggle,
-    undo,
-    dismissUndo,
   };
 }
