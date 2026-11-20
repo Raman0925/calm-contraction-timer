@@ -1,9 +1,17 @@
 // SPDX-License-Identifier: Apache-2.0
-import type { StaticScreenProps } from '@react-navigation/native';
+import { useNavigation, type StaticScreenProps } from '@react-navigation/native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
-import { AppText, EmptyState, Screen, StatTile, UndoSnackbar, spacing } from '@core/design';
+import {
+  AppButton,
+  AppText,
+  EmptyState,
+  Screen,
+  StatTile,
+  UndoSnackbar,
+  spacing,
+} from '@core/design';
 import { formatDay, formatTime } from '@core/utils/dateFormat';
 import { formatClock, formatMinutes } from '@core/utils/format';
 import { ContractionEditor } from './ContractionEditor';
@@ -16,6 +24,7 @@ type Props = StaticScreenProps<{ sessionKey: number }>;
 /** One session: summary, charts and every contraction, each editable. */
 export function SessionDetailScreen({ route }: Props) {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const detail = useSessionDetail(route.params.sessionKey);
   const [editingId, setEditingId] = useState<number | null>(null);
   const { session, stats, undoOffer } = detail;
@@ -78,6 +87,16 @@ export function SessionDetailScreen({ route }: Props) {
           }
         />
       </View>
+      <AppButton
+        label={t('export.button')}
+        accessibilityHint={t('export.buttonHint')}
+        icon="export-variant"
+        mode="outlined"
+        onPress={() => {
+          navigation.navigate('Export', { sessionKey: session.key });
+        }}
+        testID="export-session"
+      />
       <SessionCharts items={stats.items} />
       <ContractionList
         items={stats.items}

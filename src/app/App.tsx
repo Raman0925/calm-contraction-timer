@@ -5,6 +5,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppThemeProvider, EmptyState, Screen, useAppTheme } from '@core/design';
 import { initI18n } from '@core/i18n';
 import { useSettingsStore } from '@features/settings/data/settingsStore';
+import type { FileSharer } from '@features/export/data/fileSharer';
+import { FileSharerProvider, useFileSharer } from '@features/export/ui/ExportServices';
 import { TimerServicesProvider, type TimerServices } from '@features/timer/ui/TimerServices';
 import { useCurrentSession } from '@features/timer/ui/useCurrentSession';
 import { useSessionNotificationSync } from '@features/timer/ui/useSessionNotificationSync';
@@ -41,7 +43,15 @@ function ThemedApp({ sessionActive, children }: { sessionActive: boolean; childr
 /** Runs once services are ready: theme follows the session, notification stays in sync. */
 function ReadyApp() {
   const { session } = useCurrentSession(THEME_TICK_MS);
+  const sharer = useFileSharer();
   useSessionNotificationSync();
+
+  // Exported files are only needed while sharing; never keep them across launches.
+  useEffect(() => {
+    sharer.clearExports().catch((error: unknown) => {
+      console.error('Clearing old exports failed', error);
+    });
+  }, [sharer]);
   return (
     <ThemedApp sessionActive={session !== null}>
       <ThemedNavigation />
@@ -67,10 +77,12 @@ function BootScreen({ failed }: { failed: boolean }) {
 interface AppProps {
   /** Injected in tests; production services are created on first launch otherwise. */
   services?: TimerServices;
+  /** Injected in tests; the device share sheet otherwise. */
+  fileSharer?: FileSharer;
 }
 
 /** App root: opens the database, then provides services, theme and navigation. */
-export function App({ services: injected }: AppProps) {
+export function App({ services: injected, fileSharer }: AppProps) {
   const [services, setServices] = useState<TimerServices | undefined>(injected);
   const [failed, setFailed] = useState(false);
 
@@ -90,7 +102,13 @@ export function App({ services: injected }: AppProps) {
     <SafeAreaProvider>
       {services ? (
         <TimerServicesProvider services={services}>
-          <ReadyApp />
+          {fileSharer ? (
+            <FileSharerProvider sharer={fileSharer}>
+              <ReadyApp />
+            </FileSharerProvider>
+          ) : (
+            <ReadyApp />
+          )}
         </TimerServicesProvider>
       ) : (
         <BootScreen failed={failed} />

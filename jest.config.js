@@ -1,4 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
+// Run every test in UTC so date formatting is the same on every machine.
+process.env.TZ = 'UTC';
+
 /** @type {import('jest').Config} */
 module.exports = {
   preset: '@react-native/jest-preset',
