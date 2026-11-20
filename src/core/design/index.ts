@@ -29,3 +29,12 @@ export { PatternStatusCard } from './components/PatternStatusCard';
 export type { PatternCardState } from './components/PatternStatusCard';
 export { UndoSnackbar, UNDO_DURATION_MS } from './components/UndoSnackbar';
 export { ListRow } from './components/ListRow';
+export { TrendChart } from './components/TrendChart';
+
+export { SessionCard } from './components/SessionCard';
+export { AppDialog } from './components/AppDialog';
+export { Stepper } from './components/Stepper';
+export type { StepperStep } from './components/Stepper';
+export { ChipChoice } from './components/ChipChoice';
+export type { ChipOption } from './components/ChipChoice';
+export { TextField } from './components/TextField';
