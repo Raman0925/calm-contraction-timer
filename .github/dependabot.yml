@@ -10,6 +10,13 @@ updates:
       prefix: build
       include: scope
     groups:
+      # These must move together; upgrade them with the React Native Upgrade Helper.
+      react-native-core:
+        patterns:
+          - react
+          - react-native
+          - '@react-native/*'
+          - '@react-native-community/cli*'
       react-navigation:
         patterns: ['@react-navigation/*']
       dev-tooling:
