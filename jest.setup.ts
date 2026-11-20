@@ -9,4 +9,15 @@ jest.mock('react-native-nitro-modules', () => ({
   NitroModules: { createHybridObject: jest.fn() },
 }));
 
+// Native modules that have no JS fallback. Tests use fakes from */testing/ instead.
+jest.mock('react-native-notify-kit', () =>
+  jest.requireActual<object>('react-native-notify-kit/jest-mock'),
+);
+jest.mock('react-native-haptic-feedback', () => ({ trigger: jest.fn() }));
+jest.mock('@op-engineering/op-sqlite', () => ({ open: jest.fn() }));
+jest.mock('./src/core/native/NativeKeepAwake', () => ({
+  __esModule: true,
+  default: { activate: jest.fn(), deactivate: jest.fn() },
+}));
+
 initI18n();
