@@ -67,7 +67,7 @@ Paper imports outside the design system.
 2. ✅ SQLite + Drizzle schema, migrations, repositories, `computeStats`
 3. ✅ Timer screen, ongoing notification, crash/kill recovery, keep-awake
 4. ✅ History, session detail, charts, editing
-5. CSV/PDF export, settings, onboarding and disclaimer
+5. ✅ CSV/PDF export, settings, onboarding and disclaimer
 6. One-time Pro unlock
 7. Consent (UMP) and a single banner on History for free users
 8. Google Drive backup and restore (Pro)
@@ -98,6 +98,41 @@ time, so if one ever has to change, restart Metro with `npm start -- --reset-cac
 
 The app applies pending migrations on start, each in its own transaction. Tests run the
 same SQL bundle against sql.js, including an upgrade from every previous version.
+
+## Export
+
+Each session can be shared as a CSV spreadsheet (times in local ISO 8601 with the UTC
+offset) or as a PDF doctor report with a summary, a chart, the full table and a disclaimer
+footer. Files are written to the app cache and handed to the Android share menu; nothing is
+uploaded by the app.
+
+## Tests
+
+- `npm test` runs unit and component tests (Jest + Testing Library) in UTC, against an
+  in-memory SQLite database that runs the same migrations as the app.
+- `e2e/flows` holds [Maestro](https://maestro.mobile.dev) flows: onboarding, timing three
+  contractions, History and CSV export. The **E2E** workflow runs them on an emulator on every
+  push to `main` and nightly. To run them locally, install Maestro, then:
+
+  ```sh
+  cd android && ./gradlew assembleRelease -PreactNativeArchitectures=x86_64 && cd ..
+  adb install -r android/app/build/outputs/apk/release/app-release.apk
+  maestro test e2e/flows
+  ```
+
+Without the upload-key environment variables, release builds are signed with the debug key so
+they can be installed for testing. Google Play rejects those builds.
+
+## Open-source licences
+
+`npm install` (and `npm ci` in CI) regenerates
+`src/features/settings/data/licences.generated.json` from the production dependencies, which
+the app shows under **Settings → Open-source licences**. CI fails if any production dependency
+has a licence outside the allow-list in `package.json` (`licenses:check`).
+
+## Privacy
+
+See [PRIVACY.md](PRIVACY.md). It is also the privacy policy linked from the app.
 
 ## Contributing
 
