@@ -3,6 +3,10 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
+// The app version comes from package.json, which release-please bumps.
+def appVersionName = new groovy.json.JsonSlurper().parse(file("../../package.json")).version
+def (versionMajor, versionMinor, versionPatch) = appVersionName.tokenize(".-")[0..2].collect { it as int }
+
 react {
     autolinkLibrariesWithApp()
 }
@@ -17,8 +21,8 @@ android {
         applicationId "com.calmcontractiontimer.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "0.1.0"
+        versionCode versionMajor * 1_000_000 + versionMinor * 1_000 + versionPatch
+        versionName appVersionName
     }
 
     signingConfigs {

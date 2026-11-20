@@ -6,5 +6,5 @@ This product is licensed under the Apache License, Version 2.0 (see LICENSE).
 The "Calm Contraction Timer" name, logo, icon and store artwork are not
 covered by the Apache License; see TRADEMARKS.md.
 
-Third-party open-source components and their licences are listed in the app
-under Settings > Open-source licences.
+Third-party open-source components and their licences are listed in
+package.json and, once released, in the app under Settings > Open-source licences.

@@ -4,7 +4,6 @@ import { StatusBar, useColorScheme } from 'react-native';
 import { PaperProvider } from 'react-native-paper';
 import { systemClock, type Clock } from '@core/utils/clock';
 import { resolveThemeName, type ThemePreference } from './resolveThemeName';
-import { paperSettings } from './paperSettings';
 import { getTheme } from './themes';
 import { useLocalHour } from './useLocalHour';
 
@@ -31,7 +30,7 @@ export function AppThemeProvider({
   );
 
   return (
-    <PaperProvider theme={theme} settings={paperSettings}>
+    <PaperProvider theme={theme}>
       <StatusBar barStyle={theme.dark ? 'light-content' : 'dark-content'} />
       {children}
     </PaperProvider>
