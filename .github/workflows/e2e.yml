@@ -61,7 +61,7 @@ jobs:
           disable-animations: true
           script: |
             adb install -r android/app/build/outputs/apk/release/app-release.apk
-            maestro test e2e/flows --format junit --output e2e/output/report.xml --debug-output e2e/output
+            maestro test e2e/flows --format junit --output e2e/output/report.xml --test-output-dir e2e/output
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:

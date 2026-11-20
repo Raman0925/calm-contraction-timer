@@ -13,14 +13,24 @@ appId: com.calmcontractiontimer.app
 - repeat:
     times: 3
     commands:
+      # The button is disabled while the timer loads or saves; wait until it can be pressed.
+      - extendedWaitUntil:
+          visible:
+            text: 'Start'
+            enabled: true
+          timeout: 10000
       - tapOn: 'Start'
       - extendedWaitUntil:
-          visible: 'Stop'
-          timeout: 5000
+          visible:
+            text: 'Stop'
+            enabled: true
+          timeout: 10000
       - tapOn: 'Stop'
-      - extendedWaitUntil:
-          visible: 'Start'
-          timeout: 5000
+- extendedWaitUntil:
+    visible:
+      text: 'Start'
+      enabled: true
+    timeout: 10000
 - assertVisible: 'Recent contractions'
 - tapOn: 'History'
 - tapOn: '.*3 contractions.*'
