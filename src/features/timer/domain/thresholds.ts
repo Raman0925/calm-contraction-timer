@@ -40,3 +40,20 @@ export function findPreset(thresholds: PatternThresholds): PatternPresetId | nul
 export function thresholdsLabel(thresholds: PatternThresholds): string {
   return `${thresholds.maxIntervalMinutes}-${thresholds.minDurationSeconds / 60}-${thresholds.sustainedMinutes / 60}`;
 }
+
+/** Allowed range and step for each threshold in Settings. */
+export const THRESHOLD_LIMITS = {
+  maxIntervalMinutes: { min: 1, max: 15, step: 1 },
+  minDurationSeconds: { min: 30, max: 120, step: 10 },
+  sustainedMinutes: { min: 15, max: 180, step: 15 },
+} as const satisfies Record<keyof PatternThresholds, { min: number; max: number; step: number }>;
+
+/** Moves one threshold by `steps` of its step size, kept within its limits. */
+export function adjustThreshold(
+  thresholds: PatternThresholds,
+  key: keyof PatternThresholds,
+  steps: number,
+): PatternThresholds {
+  const { min, max, step } = THRESHOLD_LIMITS[key];
+  return { ...thresholds, [key]: Math.min(max, Math.max(min, thresholds[key] + steps * step)) };
+}

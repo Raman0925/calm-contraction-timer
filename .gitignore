@@ -42,3 +42,6 @@ Thumbs.db
 # Maestro
 e2e/output/
 .maestro/
+
+# Generated on install by scripts/generate-licences.mjs
+src/features/settings/data/licences.generated.json

@@ -1,5 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
-import { DEFAULT_THRESHOLDS, PATTERN_PRESETS, findPreset, thresholdsLabel } from './thresholds';
+import {
+  DEFAULT_THRESHOLDS,
+  PATTERN_PRESETS,
+  adjustThreshold,
+  findPreset,
+  thresholdsLabel,
+} from './thresholds';
 
 describe('thresholds', () => {
   it('defaults to 5-1-1', () => {
@@ -22,5 +28,16 @@ describe('thresholds', () => {
     expect(
       thresholdsLabel({ maxIntervalMinutes: 6, minDurationSeconds: 90, sustainedMinutes: 90 }),
     ).toBe('6-1.5-1.5');
+  });
+
+  it('adjusts one threshold by its step within limits', () => {
+    expect(adjustThreshold(DEFAULT_THRESHOLDS, 'maxIntervalMinutes', 1).maxIntervalMinutes).toBe(6);
+    expect(adjustThreshold(DEFAULT_THRESHOLDS, 'minDurationSeconds', -1).minDurationSeconds).toBe(
+      50,
+    );
+    expect(adjustThreshold(DEFAULT_THRESHOLDS, 'sustainedMinutes', 99).sustainedMinutes).toBe(180);
+    expect(adjustThreshold(DEFAULT_THRESHOLDS, 'maxIntervalMinutes', -99).maxIntervalMinutes).toBe(
+      1,
+    );
   });
 });

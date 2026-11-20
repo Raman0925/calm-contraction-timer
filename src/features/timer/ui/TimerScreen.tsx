@@ -24,7 +24,8 @@ export function TimerScreen() {
   const timer = useTimer();
   const { keepAwake } = useTimerServices();
   const keepAwakeEnabled = useSettingsStore(state => state.keepAwake);
-  const providerPhone = useSettingsStore(state => state.providerPhone);
+  const providerPhone = useSettingsStore(state => state.providerPhone.trim());
+  const emergencyPhone = useSettingsStore(state => state.emergencyPhone.trim());
   const focused = useIsFocused();
   const { undoOffer } = timer;
   useKeepAwake(keepAwake, keepAwakeEnabled && focused && timer.sessionActive);
@@ -35,8 +36,8 @@ export function TimerScreen() {
       ? t('timer.readyLabel')
       : t('timer.sinceLastLabel');
 
-  const callProvider = () => {
-    Linking.openURL(`tel:${providerPhone}`).catch((error: unknown) => {
+  const call = (phone: string) => () => {
+    Linking.openURL(`tel:${phone}`).catch((error: unknown) => {
       console.error('Could not open the dialler', error);
     });
   };
@@ -79,8 +80,18 @@ export function TimerScreen() {
           accessibilityHint={t('timer.callProviderHint')}
           icon="phone"
           mode="outlined"
-          onPress={callProvider}
+          onPress={call(providerPhone)}
           testID="call-provider"
+        />
+      ) : null}
+      {emergencyPhone ? (
+        <AppButton
+          label={t('timer.callEmergency')}
+          accessibilityHint={t('timer.callProviderHint')}
+          icon="phone-alert"
+          mode="outlined"
+          onPress={call(emergencyPhone)}
+          testID="call-emergency"
         />
       ) : null}
       {timer.sessionActive ? <RecentContractions items={timer.recent} /> : null}

@@ -7,3 +7,4 @@ LICENSE
 NOTICE
 CODE_OF_CONDUCT.md
 src/core/db/migrations/
+src/features/settings/data/licences.generated.json

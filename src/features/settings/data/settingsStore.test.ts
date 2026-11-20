@@ -17,7 +17,7 @@ describe('settingsStore', () => {
       keepAwake: false,
       notificationsEnabled: false,
       notificationPermissionAsked: true,
-      providerPhone: '+44 1234 567890',
+      providerPhone: '  +44 1234 567890 ',
     });
   });
 });

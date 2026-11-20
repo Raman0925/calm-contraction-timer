@@ -17,8 +17,12 @@ export interface SettingsState {
   notificationsEnabled: boolean;
   /** Whether the notification permission has been requested once already. */
   notificationPermissionAsked: boolean;
-  /** Phone number for the "Call my provider" button; empty hides the button. */
+  /** Phone number for the "Call my provider" button, as typed; blank hides the button. */
   providerPhone: string;
+  /** Emergency number for its own call button; empty hides the button. */
+  emergencyPhone: string;
+  /** When the medical disclaimer was accepted (epoch ms); null shows onboarding. */
+  disclaimerAcceptedAt: number | null;
   setThemePreference: (preference: ThemePreference) => void;
   setAutoNight: (enabled: boolean) => void;
   setPatternThresholds: (thresholds: PatternThresholds) => void;
@@ -26,6 +30,8 @@ export interface SettingsState {
   setNotificationsEnabled: (enabled: boolean) => void;
   markNotificationPermissionAsked: () => void;
   setProviderPhone: (phone: string) => void;
+  setEmergencyPhone: (phone: string) => void;
+  acceptDisclaimer: (at: number) => void;
 }
 
 /** Settings view-model store, persisted to MMKV. New fields fall back to their defaults. */
@@ -39,6 +45,8 @@ export const useSettingsStore = create<SettingsState>()(
       notificationsEnabled: true,
       notificationPermissionAsked: false,
       providerPhone: '',
+      emergencyPhone: '',
+      disclaimerAcceptedAt: null,
       setThemePreference: themePreference => {
         set({ themePreference });
       },
@@ -58,7 +66,13 @@ export const useSettingsStore = create<SettingsState>()(
         set({ notificationPermissionAsked: true });
       },
       setProviderPhone: providerPhone => {
-        set({ providerPhone: providerPhone.trim() });
+        set({ providerPhone });
+      },
+      setEmergencyPhone: emergencyPhone => {
+        set({ emergencyPhone });
+      },
+      acceptDisclaimer: disclaimerAcceptedAt => {
+        set({ disclaimerAcceptedAt });
       },
     }),
     {
