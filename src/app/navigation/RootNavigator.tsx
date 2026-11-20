@@ -4,7 +4,12 @@ import { createStaticNavigation, type StaticParamList } from '@react-navigation/
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Icon, type IconName } from '@core/design';
 import { i18n } from '@core/i18n';
+import { ExportScreen } from '@features/export/ui/ExportScreen';
 import { HistoryScreen } from '@features/history/ui/HistoryScreen';
+import { OnboardingScreen } from '@features/onboarding/ui/OnboardingScreen';
+import { useSettingsStore } from '@features/settings/data/settingsStore';
+import { DisclaimerScreen } from '@features/settings/ui/DisclaimerScreen';
+import { LicencesScreen } from '@features/settings/ui/LicencesScreen';
 import { SessionDetailScreen } from '@features/history/ui/SessionDetailScreen';
 import { SettingsScreen } from '@features/settings/ui/SettingsScreen';
 import { TimerScreen } from '@features/timer/ui/TimerScreen';
@@ -33,12 +38,42 @@ const HomeTabs = createBottomTabNavigator({
   },
 });
 
+/** Onboarding shows until the medical disclaimer has been accepted. */
+const useNeedsOnboarding = () => useSettingsStore(state => state.disclaimerAcceptedAt === null);
+const useIsOnboarded = () => !useNeedsOnboarding();
+
 const RootStack = createNativeStackNavigator({
-  screens: {
-    Home: { screen: HomeTabs, options: { headerShown: false } },
-    SessionDetail: {
-      screen: withScreenBoundary(SessionDetailScreen),
-      options: () => ({ title: i18n.t('history.sessionTitle') }),
+  groups: {
+    Onboarding: {
+      if: useNeedsOnboarding,
+      screens: {
+        Onboarding: {
+          screen: withScreenBoundary(OnboardingScreen),
+          options: { headerShown: false },
+        },
+      },
+    },
+    App: {
+      if: useIsOnboarded,
+      screens: {
+        Home: { screen: HomeTabs, options: { headerShown: false } },
+        SessionDetail: {
+          screen: withScreenBoundary(SessionDetailScreen),
+          options: () => ({ title: i18n.t('history.sessionTitle') }),
+        },
+        Export: {
+          screen: withScreenBoundary(ExportScreen),
+          options: () => ({ title: i18n.t('export.title') }),
+        },
+        Disclaimer: {
+          screen: withScreenBoundary(DisclaimerScreen),
+          options: () => ({ title: i18n.t('disclaimer.title') }),
+        },
+        Licences: {
+          screen: withScreenBoundary(LicencesScreen),
+          options: () => ({ title: i18n.t('licences.title') }),
+        },
+      },
     },
   },
 });
