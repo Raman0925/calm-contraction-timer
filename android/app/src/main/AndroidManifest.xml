@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- SPDX-License-Identifier: Apache-2.0 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- notify-kit declares these for features this app does not use: foreground services,
+         exact alarms, rescheduling after reboot and Xiaomi heads-up tweaks. The session
+         notification is a plain ongoing notification, so they are removed. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" tools:node="remove" />
 
     <application
       android:name=".MainApplication"
@@ -27,5 +36,8 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
+      <service android:name="app.notifee.core.ForegroundService" tools:node="remove" />
+      <receiver android:name="app.notifee.core.RebootBroadcastReceiver" tools:node="remove" />
+      <receiver android:name="app.notifee.core.AlarmPermissionBroadcastReceiver" tools:node="remove" />
     </application>
 </manifest>
