@@ -66,7 +66,7 @@ Paper imports outside the design system.
 1. ✅ Project setup, design system, themes, navigation, i18n, CI
 2. ✅ SQLite + Drizzle schema, migrations, repositories, `computeStats`
 3. ✅ Timer screen, ongoing notification, crash/kill recovery, keep-awake
-4. History, session detail, charts
+4. ✅ History, session detail, charts, editing
 5. CSV/PDF export, settings, onboarding and disclaimer
 6. One-time Pro unlock
 7. Consent (UMP) and a single banner on History for free users

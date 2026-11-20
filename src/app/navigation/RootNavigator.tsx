@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Icon, type IconName } from '@core/design';
 import { i18n } from '@core/i18n';
 import { HistoryScreen } from '@features/history/ui/HistoryScreen';
+import { SessionDetailScreen } from '@features/history/ui/SessionDetailScreen';
 import { SettingsScreen } from '@features/settings/ui/SettingsScreen';
 import { TimerScreen } from '@features/timer/ui/TimerScreen';
 import { withScreenBoundary } from '../ScreenErrorBoundary';
@@ -35,6 +36,10 @@ const HomeTabs = createBottomTabNavigator({
 const RootStack = createNativeStackNavigator({
   screens: {
     Home: { screen: HomeTabs, options: { headerShown: false } },
+    SessionDetail: {
+      screen: withScreenBoundary(SessionDetailScreen),
+      options: () => ({ title: i18n.t('history.sessionTitle') }),
+    },
   },
 });
 

@@ -2,10 +2,9 @@
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { AppText, ListRow } from '@core/design';
+import { formatTime } from '@core/utils/dateFormat';
 import { formatClock, formatMinutes } from '@core/utils/format';
 import type { ContractionStat } from '../domain/computeStats';
-
-const timeFormat = new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' });
 
 /** The latest contractions, newest first, with start time, length and frequency. */
 export function RecentContractions({ items }: { items: ContractionStat[] }) {
@@ -28,7 +27,7 @@ export function RecentContractions({ items }: { items: ContractionStat[] }) {
           <ListRow
             key={item.contraction.id}
             icon="timer-outline"
-            title={timeFormat.format(item.contraction.startedAt)}
+            title={formatTime(item.contraction.startedAt)}
             description={parts.filter(Boolean).join(' · ')}
           />
         );
