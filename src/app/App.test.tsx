@@ -1,11 +1,20 @@
 // SPDX-License-Identifier: Apache-2.0
 import { render, screen } from '@testing-library/react-native';
+import { createTestServices } from '@features/timer/ui/testing/createTestServices';
 import { App } from './App';
 
 describe('App', () => {
-  it('opens on the timer tab', async () => {
-    await render(<App />);
+  it('opens on the timer tab once data is ready', async () => {
+    const { services } = await createTestServices();
+    await render(<App services={services} />);
     expect(await screen.findByTestId('timer-screen')).toBeOnTheScreen();
-    expect(screen.getByText('Ready when you are')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Start' })).toBeOnTheScreen();
+  });
+
+  it('clears any stale notification on launch', async () => {
+    const { services, notifier } = await createTestServices();
+    await render(<App services={services} />);
+    await screen.findByTestId('timer-screen');
+    expect(notifier.last).toBeNull();
   });
 });

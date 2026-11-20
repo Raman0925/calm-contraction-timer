@@ -65,13 +65,25 @@ Paper imports outside the design system.
 
 1. ✅ Project setup, design system, themes, navigation, i18n, CI
 2. ✅ SQLite + Drizzle schema, migrations, repositories, `computeStats`
-3. Timer screen, ongoing notification, crash/kill recovery, keep-awake
+3. ✅ Timer screen, ongoing notification, crash/kill recovery, keep-awake
 4. History, session detail, charts
 5. CSV/PDF export, settings, onboarding and disclaimer
 6. One-time Pro unlock
 7. Consent (UMP) and a single banner on History for free users
 8. Google Drive backup and restore (Pro)
 9. Live Update notifications, accessibility and performance passes, release pipeline
+
+## Timer and notification
+
+Start is written to the database the moment it is tapped, so a running contraction
+survives the app being killed, a reboot or a time-zone change; the timer resumes from the
+stored start time. During a session an ongoing notification shows a chronometer with a
+Start or Stop button that works from the lock screen, even when the app is not running.
+It is a plain ongoing notification, not a foreground service, and the app asks for
+notification permission when the first contraction is timed, not at launch.
+
+Known limitation: after the phone restarts, the notification comes back the next time the
+app is opened. No timing data is lost in the meantime.
 
 ## Database
 

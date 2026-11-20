@@ -1,15 +1,22 @@
 // SPDX-License-Identifier: Apache-2.0
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { AppThemeProvider, useAppTheme } from '@core/design';
+import { AppThemeProvider, EmptyState, Screen, useAppTheme } from '@core/design';
 import { initI18n } from '@core/i18n';
 import { useSettingsStore } from '@features/settings/data/settingsStore';
+import { TimerServicesProvider, type TimerServices } from '@features/timer/ui/TimerServices';
+import { useCurrentSession } from '@features/timer/ui/useCurrentSession';
+import { useSessionNotificationSync } from '@features/timer/ui/useSessionNotificationSync';
 import { installGlobalErrorHandler } from './globalErrorHandler';
 import { Navigation } from './navigation/RootNavigator';
 import { toNavigationTheme } from './navigation/navigationTheme';
+import { createProductionServices } from './services';
 
 initI18n();
 installGlobalErrorHandler();
+
+const THEME_TICK_MS = 60_000;
 
 function ThemedNavigation() {
   const theme = useAppTheme();
@@ -17,16 +24,77 @@ function ThemedNavigation() {
   return <Navigation theme={navigationTheme} />;
 }
 
-/** App root: providers, theme and navigation. */
-export function App() {
+function ThemedApp({ sessionActive, children }: { sessionActive: boolean; children: ReactNode }) {
   const themePreference = useSettingsStore(state => state.themePreference);
   const autoNight = useSettingsStore(state => state.autoNight);
+  return (
+    <AppThemeProvider
+      preference={themePreference}
+      autoNight={autoNight}
+      sessionActive={sessionActive}
+    >
+      {children}
+    </AppThemeProvider>
+  );
+}
+
+/** Runs once services are ready: theme follows the session, notification stays in sync. */
+function ReadyApp() {
+  const { session } = useCurrentSession(THEME_TICK_MS);
+  useSessionNotificationSync();
+  return (
+    <ThemedApp sessionActive={session !== null}>
+      <ThemedNavigation />
+    </ThemedApp>
+  );
+}
+
+function BootScreen({ failed }: { failed: boolean }) {
+  const { t } = useTranslation();
+  return (
+    <ThemedApp sessionActive={false}>
+      <Screen scroll={false} testID="boot-screen">
+        <EmptyState
+          icon={failed ? 'database-alert-outline' : 'timer-sand'}
+          title={failed ? t('app.dbErrorTitle') : t('app.loading')}
+          message={failed ? t('app.dbErrorMessage') : undefined}
+        />
+      </Screen>
+    </ThemedApp>
+  );
+}
+
+interface AppProps {
+  /** Injected in tests; production services are created on first launch otherwise. */
+  services?: TimerServices;
+}
+
+/** App root: opens the database, then provides services, theme and navigation. */
+export function App({ services: injected }: AppProps) {
+  const [services, setServices] = useState<TimerServices | undefined>(injected);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    if (services) {
+      return;
+    }
+    createProductionServices()
+      .then(setServices)
+      .catch((error: unknown) => {
+        console.error('Opening the database failed', error);
+        setFailed(true);
+      });
+  }, [services]);
 
   return (
     <SafeAreaProvider>
-      <AppThemeProvider preference={themePreference} autoNight={autoNight} sessionActive={false}>
-        <ThemedNavigation />
-      </AppThemeProvider>
+      {services ? (
+        <TimerServicesProvider services={services}>
+          <ReadyApp />
+        </TimerServicesProvider>
+      ) : (
+        <BootScreen failed={failed} />
+      )}
     </SafeAreaProvider>
   );
 }

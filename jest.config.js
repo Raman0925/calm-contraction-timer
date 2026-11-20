@@ -5,7 +5,7 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: { '[.]ttf$': '<rootDir>/jest/assetStub.js' },
   transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native|@react-native(-community)?|@react-navigation|react-native-paper|@react-native-vector-icons|react-native-mmkv|react-native-nitro-modules|react-native-safe-area-context|react-native-screens)/)',
+    'node_modules/(?!((jest-)?react-native|@react-native(-community)?|@react-navigation|react-native-paper|@react-native-vector-icons|react-native-mmkv|react-native-nitro-modules|react-native-safe-area-context|react-native-screens|react-native-notify-kit|react-native-haptic-feedback|@op-engineering)/)',
   ],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
@@ -13,6 +13,8 @@ module.exports = {
     '!src/**/index.ts',
     '!src/**/testing/**',
     '!src/core/db/client.ts',
+    // Native wiring only: opens the on-device database.
+    '!src/features/timer/data/repositoryInstance.ts',
     '!src/core/db/database.ts',
   ],
   coverageThreshold: {
