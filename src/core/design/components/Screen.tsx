@@ -11,13 +11,21 @@ interface ScreenProps {
   scroll?: boolean;
   /** Safe-area edges to pad. Headers and tab bars already handle top and bottom. */
   edges?: readonly Edge[];
+  /** Rendered above the content, e.g. a snackbar. */
+  overlay?: ReactNode;
   testID?: string;
 }
 
 const DEFAULT_EDGES: readonly Edge[] = ['left', 'right'];
 
 /** Root container for every screen: themed background, safe area, padding. */
-export function Screen({ children, scroll = true, edges = DEFAULT_EDGES, testID }: ScreenProps) {
+export function Screen({
+  children,
+  scroll = true,
+  edges = DEFAULT_EDGES,
+  overlay,
+  testID,
+}: ScreenProps) {
   const theme = useAppTheme();
   const background = { backgroundColor: theme.colors.background };
 
@@ -28,6 +36,7 @@ export function Screen({ children, scroll = true, edges = DEFAULT_EDGES, testID 
       ) : (
         <View style={[styles.root, styles.content]}>{children}</View>
       )}
+      {overlay}
     </SafeAreaView>
   );
 }
