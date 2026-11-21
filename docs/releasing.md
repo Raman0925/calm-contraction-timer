@@ -60,12 +60,13 @@ workflow automatically.
 
 ## Uploading to Google Play
 
-1. Download `calm-contraction-timer-vX.Y.Z.aab`, `mapping-vX.Y.Z.txt` and
-   `native-debug-symbols-vX.Y.Z.zip` from the GitHub Release.
+1. Download `calm-contraction-timer-vX.Y.Z.aab` and `mapping-vX.Y.Z.txt` from the GitHub
+   Release.
 2. In Play Console open **Test and release → Testing → Internal testing → Create new release**
    and upload the `.aab`.
 3. In **App bundle explorer**, select that version and under **Downloads** upload the
-   mapping file (ReTrace mapping file) and the native debug symbols.
+   mapping file (ReTrace mapping file). Native debug symbols are inside the bundle, so Play
+   picks them up on its own.
 4. Review and roll out; promote to production when it is ready.
 
 ## Before the first release
