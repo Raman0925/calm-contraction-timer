@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-import type { StaticScreenProps } from '@react-navigation/native';
+import { useNavigation, type StaticScreenProps } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { AppButton, AppText, EmptyState, Screen, useAppTheme } from '@core/design';
 import { formatDay, formatTime } from '@core/utils/dateFormat';
+import { useIsPro } from '@features/paywall/ui/ProServices';
 import { useExport } from './useExport';
 
 type Props = StaticScreenProps<{ sessionKey: number }>;
@@ -11,6 +12,8 @@ type Props = StaticScreenProps<{ sessionKey: number }>;
 export function ExportScreen({ route }: Props) {
   const { t } = useTranslation();
   const theme = useAppTheme();
+  const navigation = useNavigation();
+  const isPro = useIsPro();
   const { loaded, session, busy, failed, exportCsv, exportPdf } = useExport(
     route.params.sessionKey,
   );
@@ -41,11 +44,17 @@ export function ExportScreen({ route }: Props) {
         testID="export-csv"
       />
       <AppButton
-        label={t('export.pdf')}
-        accessibilityHint={t('export.pdfHint')}
-        icon="file-pdf-box"
+        label={isPro ? t('export.pdf') : `${t('export.pdf')} · ${t('pro.badge')}`}
+        accessibilityHint={isPro ? t('export.pdfHint') : t('export.pdfLockedHint')}
+        icon={isPro ? 'file-pdf-box' : 'lock-outline'}
         mode="contained-tonal"
-        onPress={exportPdf}
+        onPress={
+          isPro
+            ? exportPdf
+            : () => {
+                navigation.navigate('Paywall');
+              }
+        }
         disabled={busy}
         testID="export-pdf"
       />

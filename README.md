@@ -11,6 +11,21 @@ true-black night mode for 3 AM hospital rooms, and no upsell on the timer screen
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Raman0925/calm-contraction-timer/badge)](https://scorecard.dev/viewer/?uri=github.com/Raman0925/calm-contraction-timer)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
+## Pro unlock
+
+Pro is a single non-consumable in-app product sold through Google Play Billing
+(react-native-iap). It unlocks the PDF doctor report and, later, Drive backup and an ad-free
+History screen. The timer itself is never limited.
+
+The app connects on start, restores owned purchases (which also revokes Pro after a refund),
+acknowledges purchases within Google Play's 3-day window, and handles pending, cancelled and
+failed purchases. The entitlement is stored on the phone, so Pro keeps working offline. Billing
+errors are caught in one place and never affect the timer.
+
+**Play Console setup (required before release):** create an in-app product with the id
+`pro_unlock` (see `PRO_PRODUCT_ID` in `src/core/config.ts`), set its price, and activate it.
+Purchases can be tested with licence testers on the internal track.
+
 ## Privacy
 
 - All contraction data stays on your device. There is no backend and no account.
@@ -68,7 +83,7 @@ Paper imports outside the design system.
 3. ✅ Timer screen, ongoing notification, crash/kill recovery, keep-awake
 4. ✅ History, session detail, charts, editing
 5. ✅ CSV/PDF export, settings, onboarding and disclaimer
-6. One-time Pro unlock
+6. ✅ One-time Pro unlock
 7. Consent (UMP) and a single banner on History for free users
 8. Google Drive backup and restore (Pro)
 9. Live Update notifications, accessibility and performance passes, release pipeline

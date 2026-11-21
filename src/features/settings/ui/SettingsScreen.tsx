@@ -5,6 +5,7 @@ import { AppearanceSection } from './AppearanceSection';
 import { ContactsSection } from './ContactsSection';
 import { DataSection } from './DataSection';
 import { PatternSection } from './PatternSection';
+import { ProSection } from './ProSection';
 import { TimerSection } from './TimerSection';
 
 /** App settings, one section per topic. */
@@ -15,6 +16,7 @@ export function SettingsScreen() {
       <TimerSection />
       <ContactsSection />
       <AppearanceSection />
+      <ProSection />
       <DataSection />
       <AboutSection />
     </Screen>

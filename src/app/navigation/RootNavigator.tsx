@@ -7,6 +7,7 @@ import { i18n } from '@core/i18n';
 import { ExportScreen } from '@features/export/ui/ExportScreen';
 import { HistoryScreen } from '@features/history/ui/HistoryScreen';
 import { OnboardingScreen } from '@features/onboarding/ui/OnboardingScreen';
+import { PaywallScreen } from '@features/paywall/ui/PaywallScreen';
 import { useSettingsStore } from '@features/settings/data/settingsStore';
 import { DisclaimerScreen } from '@features/settings/ui/DisclaimerScreen';
 import { LicencesScreen } from '@features/settings/ui/LicencesScreen';
@@ -72,6 +73,10 @@ const RootStack = createNativeStackNavigator({
         Licences: {
           screen: withScreenBoundary(LicencesScreen),
           options: () => ({ title: i18n.t('licences.title') }),
+        },
+        Paywall: {
+          screen: withScreenBoundary(PaywallScreen),
+          options: () => ({ title: i18n.t('pro.badge'), presentation: 'modal' }),
         },
       },
     },

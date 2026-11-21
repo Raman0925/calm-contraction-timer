@@ -29,6 +29,26 @@ jest.mock('react-native-blob-util', () => ({
     },
   },
 }));
+jest.mock('react-native-iap', () => ({
+  // Same string values as react-native-iap's ErrorCode enum.
+  ErrorCode: {
+    UserCancelled: 'user-cancelled',
+    Pending: 'pending',
+    AlreadyOwned: 'already-owned',
+    NetworkError: 'network-error',
+    BillingUnavailable: 'billing-unavailable',
+    ItemUnavailable: 'item-unavailable',
+    ServiceError: 'service-error',
+  },
+  initConnection: jest.fn(() => Promise.resolve(true)),
+  endConnection: jest.fn(() => Promise.resolve(true)),
+  fetchProducts: jest.fn(() => Promise.resolve([])),
+  getAvailablePurchases: jest.fn(() => Promise.resolve([])),
+  requestPurchase: jest.fn(() => Promise.resolve(null)),
+  finishTransaction: jest.fn(() => Promise.resolve()),
+  purchaseUpdatedListener: jest.fn(() => ({ remove: jest.fn() })),
+  purchaseErrorListener: jest.fn(() => ({ remove: jest.fn() })),
+}));
 jest.mock('react-native-share', () => ({ __esModule: true, default: { open: jest.fn() } }));
 jest.mock('./src/core/native/NativeKeepAwake', () => ({
   __esModule: true,

@@ -4,11 +4,20 @@ import { PDFDocument } from 'pdf-lib';
 import { App } from '@app/App';
 import { MINUTE_MS, SECOND_MS } from '@core/utils/time';
 import { createTestServices } from '@features/timer/ui/testing/createTestServices';
+import { FakeBilling } from '@features/paywall/data/testing/FakeBilling';
+import { useProStore } from '@features/paywall/data/proStore';
 import type { FileSharer, SharedFile } from '../data/fileSharer';
 
 const NOW = Date.UTC(2026, 0, 11, 9, 0);
 
-async function openExport(sharer: FileSharer) {
+/** Google Play fake; owns Pro unless told otherwise. */
+function billingFor(pro: boolean) {
+  const billing = new FakeBilling();
+  billing.owned = pro ? [billing.proPurchase('purchased', true)] : [];
+  return billing;
+}
+
+async function openExport(sharer: FileSharer, billing = billingFor(true)) {
   const setup = await createTestServices(NOW);
   setup.notifier.permitted = true;
   for (const minutesAgo of [20, 15, 10]) {
@@ -17,7 +26,7 @@ async function openExport(sharer: FileSharer) {
     await setup.services.repository.stop(start + 60 * SECOND_MS);
   }
   await setup.services.repository.update(2, { note: 'waters, "broke"' });
-  await render(<App services={setup.services} fileSharer={sharer} />);
+  await render(<App services={setup.services} fileSharer={sharer} billing={billing} />);
   await screen.findByTestId('timer-screen');
   await fireEvent.press(screen.getByRole('button', { name: /History/ }));
   await fireEvent.press(await screen.findByRole('button', { name: /3 contractions/ }));
@@ -38,6 +47,10 @@ function recordingSharer() {
 }
 
 describe('Export', () => {
+  beforeEach(() => {
+    useProStore.setState({ isPro: false, status: 'idle', error: null, offer: null });
+  });
+
   it('shares the session as CSV', async () => {
     const { shared, sharer } = recordingSharer();
     await openExport(sharer);
@@ -56,9 +69,12 @@ describe('Export', () => {
     expect(lines[2]).toContain('"waters, ""broke"""');
   });
 
-  it('shares a PDF doctor report', async () => {
+  it('shares a PDF doctor report with Pro', async () => {
     const { shared, sharer } = recordingSharer();
     await openExport(sharer);
+    await waitFor(() => {
+      expect(screen.getByTestId('export-pdf')).toHaveAccessibleName('Doctor report (PDF)');
+    });
     await fireEvent.press(screen.getByTestId('export-pdf'));
 
     await waitFor(() => {
@@ -71,6 +87,26 @@ describe('Export', () => {
     });
     const pdf = await PDFDocument.load(shared[0]?.contents ?? '');
     expect(pdf.getTitle()).toBe('Contraction report');
+  });
+
+  it('offers Pro instead of the PDF without it, and unlocks it after buying', async () => {
+    const { shared, sharer } = recordingSharer();
+    await openExport(sharer, billingFor(false));
+    const pdf = screen.getByTestId('export-pdf');
+    expect(pdf).toHaveAccessibleName('Doctor report (PDF) · Pro');
+    await fireEvent.press(pdf);
+
+    expect(await screen.findByTestId('paywall-screen')).toBeOnTheScreen();
+    expect(shared).toEqual([]);
+    await fireEvent.press(await screen.findByRole('button', { name: 'Unlock Pro for ₹249.00' }));
+    expect(
+      await screen.findByText('Pro is active. Thank you for supporting the app!'),
+    ).toBeOnTheScreen();
+    await fireEvent.press(screen.getByTestId('pro-close'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('export-pdf')).toHaveAccessibleName('Doctor report (PDF)');
+    });
   });
 
   it('says so when sharing fails', async () => {

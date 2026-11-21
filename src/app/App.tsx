@@ -7,6 +7,9 @@ import { initI18n } from '@core/i18n';
 import { useSettingsStore } from '@features/settings/data/settingsStore';
 import type { FileSharer } from '@features/export/data/fileSharer';
 import { FileSharerProvider, useFileSharer } from '@features/export/ui/ExportServices';
+import type { BillingService } from '@features/paywall/data/billingService';
+import { PlayBilling } from '@features/paywall/data/playBilling';
+import { ProProvider } from '@features/paywall/ui/ProServices';
 import { TimerServicesProvider, type TimerServices } from '@features/timer/ui/TimerServices';
 import { useCurrentSession } from '@features/timer/ui/useCurrentSession';
 import { useSessionNotificationSync } from '@features/timer/ui/useSessionNotificationSync';
@@ -79,10 +82,13 @@ interface AppProps {
   services?: TimerServices;
   /** Injected in tests; the device share sheet otherwise. */
   fileSharer?: FileSharer;
+  /** Injected in tests; Google Play otherwise. */
+  billing?: BillingService;
 }
 
 /** App root: opens the database, then provides services, theme and navigation. */
-export function App({ services: injected, fileSharer }: AppProps) {
+export function App({ services: injected, fileSharer, billing: injectedBilling }: AppProps) {
+  const [billing] = useState<BillingService>(() => injectedBilling ?? new PlayBilling());
   const [services, setServices] = useState<TimerServices | undefined>(injected);
   const [failed, setFailed] = useState(false);
 
@@ -102,13 +108,15 @@ export function App({ services: injected, fileSharer }: AppProps) {
     <SafeAreaProvider>
       {services ? (
         <TimerServicesProvider services={services}>
-          {fileSharer ? (
-            <FileSharerProvider sharer={fileSharer}>
+          <ProProvider billing={billing}>
+            {fileSharer ? (
+              <FileSharerProvider sharer={fileSharer}>
+                <ReadyApp />
+              </FileSharerProvider>
+            ) : (
               <ReadyApp />
-            </FileSharerProvider>
-          ) : (
-            <ReadyApp />
-          )}
+            )}
+          </ProProvider>
         </TimerServicesProvider>
       ) : (
         <BootScreen failed={failed} />

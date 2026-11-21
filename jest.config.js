@@ -10,7 +10,7 @@ module.exports = {
   testTimeout: 20_000,
   moduleNameMapper: { '[.]ttf$': '<rootDir>/jest/assetStub.js' },
   transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native|@react-native(-community)?|@react-navigation|react-native-paper|@react-native-vector-icons|react-native-mmkv|react-native-nitro-modules|react-native-safe-area-context|react-native-screens|react-native-notify-kit|react-native-haptic-feedback|@op-engineering|react-native-gifted-charts|gifted-charts-core|react-native-svg)/)',
+    'node_modules/(?!((jest-)?react-native|@react-native(-community)?|@react-navigation|react-native-paper|@react-native-vector-icons|react-native-mmkv|react-native-nitro-modules|react-native-safe-area-context|react-native-screens|react-native-notify-kit|react-native-haptic-feedback|@op-engineering|react-native-gifted-charts|gifted-charts-core|react-native-svg|react-native-iap)/)',
   ],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
