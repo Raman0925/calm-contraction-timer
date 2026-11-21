@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/Raman0925/calm-contraction-timer/compare/v0.2.0...v0.2.1) (2026-11-21)
+
+
+### Bug Fixes
+
+* **ci:** check 16 KB alignment only for 64-bit native libraries ([#13](https://github.com/Raman0925/calm-contraction-timer/issues/13)) ([4d9bfcb](https://github.com/Raman0925/calm-contraction-timer/commit/4d9bfcb46fe18410c029cacc02b5d98aa9066540))
+
 ## [0.2.0](https://github.com/Raman0925/calm-contraction-timer/compare/v0.1.0...v0.2.0) (2026-11-21)
 
 
