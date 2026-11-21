@@ -19,10 +19,12 @@ appId: com.calmcontractiontimer.app
     visible: 'Length of each contraction.*'
     timeout: 10000
 - takeScreenshot: 04-session
+# Scroll to the whole interval chart; its heading alone is already on screen.
 - scrollUntilVisible:
     element:
-      text: 'Minutes between starts'
+      id: 'interval-chart'
     direction: DOWN
+    centerElement: true
 - takeScreenshot: 05-session-charts
 # Relaunch (keeps data) rather than pressing Back, which is less predictable.
 - launchApp
