@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
-# Builds the signed app bundle for a version tag, uploads it to Google Play's internal track
-# and attaches the bundle and R8 mapping to the GitHub Release. Setup: docs/releasing.md.
+# Builds the signed app bundle for a version tag and attaches it, with the R8 mapping and
+# native debug symbols, to the GitHub Release. Upload the bundle to Play Console by hand.
+# Setup: docs/releasing.md.
 #
-# Two jobs keep credentials apart: "build" runs npm and Gradle code with the signing secrets
-# but no Google credentials; "publish" runs no project code and alone may obtain a
-# short-lived Google token.
+# Two jobs keep permissions apart: "build" runs npm and Gradle code with the signing secrets
+# and a read-only token; "publish" runs no project code and alone may write to the release.
 name: Release
 
 on:
@@ -85,13 +85,12 @@ jobs:
           retention-days: 30
 
   publish:
-    name: Upload to Google Play and GitHub
+    name: Attach to the GitHub Release
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     permissions:
       contents: write
-      id-token: write
     env:
       TAG: ${{ github.ref_name }}
     steps:
@@ -100,30 +99,13 @@ jobs:
           name: release-bundle
           path: release
 
-      - name: Authenticate to Google Cloud (keyless)
-        id: auth
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
-        with:
-          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
-
-      - name: Upload to Google Play (internal track)
-        uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5 # v1.1.5
-        with:
-          serviceAccountJson: ${{ steps.auth.outputs.credentials_file_path }}
-          packageName: com.calmcontractiontimer.app
-          releaseFiles: release/bundle/release/app-release.aab
-          track: internal
-          status: ${{ vars.PLAY_RELEASE_STATUS || 'completed' }}
-          mappingFile: release/mapping/release/mapping.txt
-          debugSymbols: release/native-debug-symbols/release/native-debug-symbols.zip
-
-      - name: Attach bundle and mapping to the GitHub Release
+      - name: Attach bundle, mapping and debug symbols
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
           cp release/bundle/release/app-release.aab "calm-contraction-timer-$TAG.aab"
           cp release/mapping/release/mapping.txt "mapping-$TAG.txt"
+          cp release/native-debug-symbols/release/native-debug-symbols.zip "native-debug-symbols-$TAG.zip"
           gh release view "$TAG" > /dev/null 2>&1 || gh release create "$TAG" --verify-tag --generate-notes
-          gh release upload "$TAG" "calm-contraction-timer-$TAG.aab" "mapping-$TAG.txt" --clobber
+          gh release upload "$TAG" "calm-contraction-timer-$TAG.aab" "mapping-$TAG.txt" "native-debug-symbols-$TAG.zip" --clobber

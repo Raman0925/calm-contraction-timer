@@ -182,14 +182,14 @@ has a licence outside the allow-list in `package.json` (`licenses:check`).
 ## Releasing
 
 Releases go from a release-please PR to a `vX.Y.Z` tag, then the **Release** workflow
-(approved in the `production` environment) uploads a signed bundle to the Play internal
-track and attaches it with the R8 mapping to the GitHub Release. Every native library is
+(approved in the `production` environment) builds a signed bundle and attaches it, with the
+R8 mapping and native debug symbols, to the GitHub Release, from where it is uploaded to
+Play Console by hand. Every native library is
 checked for 16 KB page alignment in CI.
 
 Release secrets: `CCT_UPLOAD_KEYSTORE_BASE64`, `CCT_UPLOAD_STORE_PASSWORD`,
 `CCT_UPLOAD_KEY_ALIAS`, `CCT_UPLOAD_KEY_PASSWORD`, `CCT_ADMOB_APP_ID`, `CCT_ADMOB_BANNER_ID` and,
-optionally, `RELEASE_PLEASE_TOKEN`; repository variables `GCP_WORKLOAD_IDENTITY_PROVIDER`,
-`GCP_SERVICE_ACCOUNT` and, optionally, `PLAY_RELEASE_STATUS`. How to create each one is in
+optionally, `RELEASE_PLEASE_TOKEN`. How to create each one is in
 [docs/releasing.md](docs/releasing.md). The Play store listing draft, with Data safety
 answers, is in [docs/store-listing.md](docs/store-listing.md); icon, feature graphic and
 screenshots are in [assets/brand/play](assets/brand/play).
