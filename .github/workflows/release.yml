@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
-# Builds the signed app bundle for a version tag and attaches it, with the R8 mapping and
-# native debug symbols, to the GitHub Release. Upload the bundle to Play Console by hand.
+# Builds the signed app bundle for a version tag and attaches it, with the R8 mapping, to the
+# GitHub Release. Upload the bundle to Play Console by hand.
 # Setup: docs/releasing.md.
 #
 # Two jobs keep permissions apart: "build" runs npm and Gradle code with the signing secrets
@@ -80,7 +80,6 @@ jobs:
           path: |
             android/app/build/outputs/bundle/release/app-release.aab
             android/app/build/outputs/mapping/release/mapping.txt
-            android/app/build/outputs/native-debug-symbols/release/native-debug-symbols.zip
           if-no-files-found: error
           retention-days: 30
 
@@ -99,13 +98,13 @@ jobs:
           name: release-bundle
           path: release
 
-      - name: Attach bundle, mapping and debug symbols
+      # Native debug symbols travel inside the bundle (BUNDLE-METADATA), where Play reads them.
+      - name: Attach bundle and mapping
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
           cp release/bundle/release/app-release.aab "calm-contraction-timer-$TAG.aab"
           cp release/mapping/release/mapping.txt "mapping-$TAG.txt"
-          cp release/native-debug-symbols/release/native-debug-symbols.zip "native-debug-symbols-$TAG.zip"
           gh release view "$TAG" > /dev/null 2>&1 || gh release create "$TAG" --verify-tag --generate-notes
-          gh release upload "$TAG" "calm-contraction-timer-$TAG.aab" "mapping-$TAG.txt" "native-debug-symbols-$TAG.zip" --clobber
+          gh release upload "$TAG" "calm-contraction-timer-$TAG.aab" "mapping-$TAG.txt" --clobber
