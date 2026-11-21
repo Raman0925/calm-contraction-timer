@@ -174,6 +174,47 @@ describe('DrizzleContractionRepository', () => {
     expect(await repo.listAll()).toEqual([]);
   });
 
+  it('replaces everything at once, keeping ids, and notifies', async () => {
+    const { repo, listener } = await setup();
+    await recordOne(repo);
+    listener.mockClear();
+    const replacement = [
+      { id: 7, startedAt: T0, endedAt: T0 + MINUTE_MS, intensity: 2 as const, note: 'a' },
+      { id: 9, startedAt: T0 + 5 * MINUTE_MS, endedAt: null, intensity: null, note: null },
+    ];
+    await repo.replaceAll(replacement);
+    expect(await repo.listAll()).toEqual(replacement);
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect((await repo.start(T0 + 6 * MINUTE_MS)).ok).toBe(false);
+  });
+
+  it('changes nothing when the replacement is rejected', async () => {
+    const { repo } = await setup();
+    await recordOne(repo);
+    const before = await repo.listAll();
+    const clashing = [
+      { id: 1, startedAt: T0, endedAt: null, intensity: null, note: null },
+      { id: 2, startedAt: T0 + MINUTE_MS, endedAt: null, intensity: null, note: null },
+    ];
+    await expect(repo.replaceAll(clashing)).rejects.toThrow();
+    expect(await repo.listAll()).toEqual(before);
+  });
+
+  it('replaces large histories in chunks and can empty the table', async () => {
+    const { repo } = await setup();
+    const many = Array.from({ length: 1200 }, (_, i) => ({
+      id: i + 1,
+      startedAt: T0 + i * MINUTE_MS,
+      endedAt: T0 + i * MINUTE_MS + 30_000,
+      intensity: null,
+      note: null,
+    }));
+    await repo.replaceAll(many);
+    expect(await repo.listAll()).toHaveLength(1200);
+    await repo.replaceAll([]);
+    expect(await repo.listAll()).toEqual([]);
+  });
+
   it('stops notifying after unsubscribe', async () => {
     const { repo } = await setup();
     const listener = jest.fn();

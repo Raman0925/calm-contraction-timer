@@ -28,6 +28,14 @@ export function drizzleFor(connection: SqlConnection) {
       // For `get`, the proxy driver expects the single row itself (or nothing).
       return { rows: method === 'get' ? (rawRows[0] ?? []) : rawRows };
     },
+    // db.batch() runs all statements in one transaction (op-sqlite executeBatch).
+    // It is for writes only: batched statements return no rows.
+    async (batch: { sql: string; params: SqlValue[] }[]) => {
+      await connection.executeBatch(
+        batch.map(({ sql, params }): [string, SqlValue[]] => [sql, params]),
+      );
+      return batch.map(() => ({ rows: [] }));
+    },
     { schema },
   );
 }

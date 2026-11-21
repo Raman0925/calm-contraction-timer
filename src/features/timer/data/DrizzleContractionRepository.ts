@@ -31,6 +31,17 @@ function isUniqueViolation(error: unknown): boolean {
   return false;
 }
 
+/** Rows per INSERT, well under SQLite's limit on bound parameters. */
+const INSERT_CHUNK = 500;
+
+function chunk<T>(items: readonly T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < items.length; i += size) {
+    chunks.push(items.slice(i, i + size));
+  }
+  return chunks;
+}
+
 const isValid = (c: Contraction): boolean =>
   Number.isFinite(c.startedAt) &&
   (c.endedAt === null || (Number.isFinite(c.endedAt) && c.endedAt >= c.startedAt));
@@ -159,6 +170,14 @@ export class DrizzleContractionRepository implements ContractionRepository {
 
   async removeAll(): Promise<void> {
     await this.db.delete(contractions);
+    this.notify();
+  }
+
+  async replaceAll(replacement: readonly Contraction[]): Promise<void> {
+    const inserts = chunk(replacement, INSERT_CHUNK).map(rows =>
+      this.db.insert(contractions).values(rows),
+    );
+    await this.db.batch([this.db.delete(contractions), ...inserts]);
     this.notify();
   }
 

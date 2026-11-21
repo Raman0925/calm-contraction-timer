@@ -46,6 +46,11 @@ export interface ContractionRepository {
   restore(contraction: Contraction): Promise<Result<Contraction, RestoreError>>;
   /** Deletes every contraction. Callers confirm first; this cannot be undone. */
   removeAll(): Promise<void>;
+  /**
+   * Replaces all contractions with `contractions` in one transaction (restore from
+   * backup): either everything is replaced or nothing changes.
+   */
+  replaceAll(contractions: readonly Contraction[]): Promise<void>;
   /** Calls `listener` after every successful write. Returns an unsubscribe function. */
   subscribe(listener: () => void): () => void;
 }
