@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 import { BarChart, LineChart } from 'react-native-gifted-charts';
-import { niceStep } from '../chartScale';
+import { niceScale } from '../chartScale';
 import { useAppTheme } from '../theme/useAppTheme';
 import { spacing } from '../tokens';
 import { AppText } from './AppText';
@@ -25,7 +25,7 @@ interface TrendChartProps {
 
 const HEIGHT = 160;
 const Y_LABEL_WIDTH = 36;
-const SECTIONS = 4;
+const MAX_SECTIONS = 4;
 
 /**
  * A single-series chart on one y-axis with a readable 1/2/5 scale. The title
@@ -47,15 +47,15 @@ export function TrendChart({
 
   const plotWidth = Math.max(0, width - Y_LABEL_WIDTH - spacing.lg);
   const step = values.length > 1 ? plotWidth / values.length : plotWidth;
-  const stepValue = niceStep(Math.max(0, ...values), SECTIONS);
+  const scale = niceScale(Math.max(0, ...values), MAX_SECTIONS);
   const muted = { color: theme.colors.onSurfaceVariant };
   const common = {
     data: values.map(value => ({ value })),
     height: HEIGHT,
     width: plotWidth,
-    noOfSections: SECTIONS,
-    stepValue,
-    maxValue: stepValue * SECTIONS,
+    noOfSections: scale.sections,
+    stepValue: scale.step,
+    maxValue: scale.step * scale.sections,
     yAxisLabelWidth: Y_LABEL_WIDTH,
     yAxisTextStyle: { ...muted, fontSize: 11 },
     xAxisLabelsHeight: 0,
