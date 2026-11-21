@@ -41,6 +41,8 @@ jobs:
       - name: Build release APK (debug-signed, no secrets)
         working-directory: android
         run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=x86_64
+      - name: Check 16 KB page alignment
+        run: bash scripts/check-16kb.sh android/app/build/outputs/apk/release/app-release.apk
       - name: Install Maestro (pinned, checksum verified)
         run: |
           curl -fsSL -o maestro.zip "https://github.com/mobile-dev-inc/maestro/releases/download/cli-${MAESTRO_VERSION}/maestro.zip"

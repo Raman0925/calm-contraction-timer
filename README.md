@@ -70,7 +70,9 @@ survives the app being killed, a reboot or a time-zone change; the timer resumes
 stored start time. During a session an ongoing notification shows a chronometer with a
 Start or Stop button that works from the lock screen, even when the app is not running.
 It is a plain ongoing notification, not a foreground service, and the app asks for
-notification permission when the first contraction is timed, not at launch.
+notification permission when the first contraction is timed, not at launch. On Android 16+
+it is promoted to a **Live Update** (status-bar chip) by a small Kotlin TurboModule, since
+notify-kit cannot request promotion itself; users can turn this off in system settings.
 
 Known limitation: after the phone restarts, the notification comes back the next time the
 app is opened. No timing data is lost in the meantime.
@@ -145,6 +147,14 @@ fraud prevention: device or other IDs (advertising ID), approximate location, ap
 and diagnostics, as described in Google's AdMob data disclosure. Declare these in the Data
 safety form and keep it in step with [PRIVACY.md](PRIVACY.md).
 
+## Accessibility
+
+Every control has a label, role and state; touch targets are at least 48 dp and the main
+button at least 120 dp; state is shown by text, icon and colour together; Start and Stop are
+announced to screen readers; layouts wrap instead of truncating; and Paper turns its
+animations off when Android's "Remove animations" is on. The Screenshots workflow also
+captures the main screens at 200% text size for review.
+
 ## Tests
 
 - `npm test` runs unit and component tests (Jest + Testing Library) in UTC, against an
@@ -169,6 +179,21 @@ they can be installed for testing. Google Play rejects those builds.
 the app shows under **Settings → Open-source licences**. CI fails if any production dependency
 has a licence outside the allow-list in `package.json` (`licenses:check`).
 
+## Releasing
+
+Releases go from a release-please PR to a `vX.Y.Z` tag, then the **Release** workflow
+(approved in the `production` environment) uploads a signed bundle to the Play internal
+track and attaches it with the R8 mapping to the GitHub Release. Every native library is
+checked for 16 KB page alignment in CI.
+
+Release secrets: `CCT_UPLOAD_KEYSTORE_BASE64`, `CCT_UPLOAD_STORE_PASSWORD`,
+`CCT_UPLOAD_KEY_ALIAS`, `CCT_UPLOAD_KEY_PASSWORD`, `CCT_ADMOB_APP_ID`, `CCT_ADMOB_BANNER_ID` and,
+optionally, `RELEASE_PLEASE_TOKEN`; repository variables `GCP_WORKLOAD_IDENTITY_PROVIDER`,
+`GCP_SERVICE_ACCOUNT` and, optionally, `PLAY_RELEASE_STATUS`. How to create each one is in
+[docs/releasing.md](docs/releasing.md). The Play store listing draft, with Data safety
+answers, is in [docs/store-listing.md](docs/store-listing.md); icon, feature graphic and
+screenshots are in [assets/brand/play](assets/brand/play).
+
 ## Roadmap
 
 1. ✅ Project setup, design system, themes, navigation, i18n, CI
@@ -179,7 +204,7 @@ has a licence outside the allow-list in `package.json` (`licenses:check`).
 6. ✅ One-time Pro unlock
 7. ✅ Consent (UMP) and a single banner on History for free users
 8. ✅ Backup to a file and restore (Pro)
-9. Live Update notifications, accessibility and performance passes, release pipeline
+9. ✅ Live Update notifications, accessibility and performance passes, release pipeline, store assets
 
 ## Contributing
 

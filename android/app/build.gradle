@@ -86,6 +86,8 @@ android {
             buildConfigField "String", "AD_BANNER_UNIT_ID", "\"${releaseBannerUnitId}\""
             minifyEnabled true
             shrinkResources true
+            // Native symbols for readable crash reports in Play Console.
+            ndk { debugSymbolLevel "SYMBOL_TABLE" }
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
