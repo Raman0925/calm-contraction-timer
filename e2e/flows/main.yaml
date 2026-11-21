@@ -46,4 +46,10 @@ appId: com.calmcontractiontimer.app
     visible: '.*(contractions-.*csv|Share contractions).*'
     timeout: 10000
 - back
-- assertVisible: 'Doctor report (PDF)'
+# Without Pro the button is labelled 'Doctor report (PDF) · Pro'.
+- assertVisible: 'Doctor report \(PDF\).*'
+# The PDF report is Pro: it opens the paywall, which must work even without Google Play.
+- tapOn: 'Doctor report \(PDF\).*'
+- assertVisible: 'Calm Contraction Timer Pro'
+- tapOn: 'Not now'
+- assertVisible: 'Export this session'
