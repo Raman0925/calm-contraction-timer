@@ -38,7 +38,7 @@ function history() {
     rows.push([t, 32 + jitter(8), 1, gap === 0 ? 'Mild, like period pain' : null]);
   }
   // Today: building from about 9 minutes apart to a steady 4-5 minutes.
-  t = 143.5;
+  t = 143.2;
   for (const gap of [0, 9.5, 8.8, 8, 7.2, 6.8, 6.1, 5.6, 5.4]) {
     t -= gap;
     rows.push([t, 45 + jitter(6), 2, null]);
