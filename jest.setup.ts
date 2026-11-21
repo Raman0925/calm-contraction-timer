@@ -94,6 +94,10 @@ jest.mock('react-native-google-mobile-ads', () => {
     }),
   };
 });
+jest.mock('./src/core/native/NativeLiveUpdate', () => ({
+  __esModule: true,
+  default: { promote: jest.fn(() => Promise.resolve(false)) },
+}));
 jest.mock('./src/core/native/NativeKeepAwake', () => ({
   __esModule: true,
   default: { activate: jest.fn(), deactivate: jest.fn() },

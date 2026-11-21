@@ -100,5 +100,7 @@ android {
 
 dependencies {
     implementation("com.facebook.react:react-android")
+    // NotificationCompat.EXTRA_REQUEST_PROMOTED_ONGOING for Live Updates (LiveUpdateModule).
+    implementation("androidx.core:core:1.18.0")
     implementation("com.facebook.react:hermes-android")
 }

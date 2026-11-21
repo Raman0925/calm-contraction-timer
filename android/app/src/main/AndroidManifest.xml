@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Android 16+: lets the session notification be shown as a Live Update. -->
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
 
     <!-- notify-kit declares these for features this app does not use: foreground services,
          exact alarms, rescheduling after reboot and Xiaomi heads-up tweaks. The session

@@ -3,6 +3,7 @@ package com.calmcontractiontimer.app
 
 import com.calmcontractiontimer.app.config.AppConfigModule
 import com.calmcontractiontimer.app.keepawake.KeepAwakeModule
+import com.calmcontractiontimer.app.liveupdate.LiveUpdateModule
 import com.facebook.react.BaseReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -16,11 +17,12 @@ class AppPackage : BaseReactPackage() {
       when (name) {
         KeepAwakeModule.NAME -> KeepAwakeModule(reactContext)
         AppConfigModule.NAME -> AppConfigModule(reactContext)
+        LiveUpdateModule.NAME -> LiveUpdateModule(reactContext)
         else -> null
       }
 
   override fun getReactModuleInfoProvider() = ReactModuleInfoProvider {
-    listOf(KeepAwakeModule.NAME, AppConfigModule.NAME).associateWith { name ->
+    listOf(KeepAwakeModule.NAME, AppConfigModule.NAME, LiveUpdateModule.NAME).associateWith { name ->
       ReactModuleInfo(
           name = name,
           className = name,

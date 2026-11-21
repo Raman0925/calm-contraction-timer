@@ -274,6 +274,8 @@ export const en = {
     contractingBody: 'Tap Stop when it ends.',
     restingTitle: 'Resting',
     restingBody: 'Time since the last contraction started.',
+    chipContraction: 'Contraction',
+    chipResting: 'Resting',
     start: 'Start',
     stop: 'Stop',
   },

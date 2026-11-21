@@ -7,6 +7,7 @@ import notifee, {
   type AndroidAction,
 } from 'react-native-notify-kit';
 import { i18n } from '@core/i18n';
+import { nativeLiveUpdate } from '@core/native/liveUpdate';
 import type { SessionNotificationState } from '../domain/currentSession';
 import type { NotificationActionId, SessionNotifier } from './sessionNotifier';
 
@@ -64,6 +65,15 @@ export const notifyKitSessionNotifier: SessionNotifier = {
         ],
       },
     });
+    // Android 16+: show it as a Live Update. Best effort; the notification already works.
+    await nativeLiveUpdate
+      .promote(
+        channelId,
+        i18n.t(contracting ? 'notification.chipContraction' : 'notification.chipResting'),
+      )
+      .catch((error: unknown) => {
+        console.warn('Live Update promotion failed', error);
+      });
   },
 
   async requestPermission() {

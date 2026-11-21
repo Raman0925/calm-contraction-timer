@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import notifee, { AuthorizationStatus } from 'react-native-notify-kit';
 import { HOUR_MS } from '@core/utils/time';
+import NativeLiveUpdate from '@core/native/NativeLiveUpdate';
 import { notifyKitSessionNotifier } from './NotifyKitSessionNotifier';
 
 const T0 = Date.UTC(2026, 0, 10, 8, 0);
@@ -26,6 +27,19 @@ describe('notifyKitSessionNotifier', () => {
       },
     });
     expect(displayed()?.android?.actions?.[0]?.pressAction).not.toHaveProperty('launchActivity');
+  });
+
+  it('asks Android 16+ to show it as a Live Update with a short chip text', async () => {
+    await notifyKitSessionNotifier.render({ kind: 'contracting', startedAt: T0 }, T0);
+    expect(NativeLiveUpdate.promote).toHaveBeenLastCalledWith('session', 'Contraction');
+  });
+
+  it('still shows the notification when Live Update promotion fails', async () => {
+    jest.mocked(NativeLiveUpdate.promote).mockRejectedValueOnce(new Error('denied'));
+    await expect(
+      notifyKitSessionNotifier.render({ kind: 'contracting', startedAt: T0 }, T0),
+    ).resolves.toBeUndefined();
+    expect(notifee.displayNotification).toHaveBeenCalled();
   });
 
   it('shows rest with a Start button that expires with the session', async () => {
