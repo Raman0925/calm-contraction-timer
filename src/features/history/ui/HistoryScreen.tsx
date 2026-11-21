@@ -2,10 +2,12 @@
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { FlatList, StyleSheet } from 'react-native';
+import { AdBanner } from '@core/ads/AdBanner';
 import { EmptyState, Screen, SessionCard, spacing } from '@core/design';
 import { formatDay, formatTime } from '@core/utils/dateFormat';
 import { formatClock, formatMinutes } from '@core/utils/format';
 import type { SessionSummary } from '../domain/sessionSummary';
+import { useIsPro } from '@features/paywall/ui/ProServices';
 import { useSessions } from './useSessions';
 
 /** Lists past sessions, newest first. */
@@ -13,6 +15,7 @@ export function HistoryScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const sessions = useSessions();
+  const isPro = useIsPro();
 
   const renderItem = ({ item }: { item: SessionSummary }) => {
     const details = [
@@ -58,6 +61,7 @@ export function HistoryScreen() {
           contentContainerStyle={styles.list}
         />
       )}
+      {isPro ? null : <AdBanner testID="history-ad" />}
     </Screen>
   );
 }

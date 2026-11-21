@@ -8,8 +8,12 @@ import type { BillingErrorKind } from '../domain/entitlement';
 import { usePro } from './ProServices';
 
 /** Only what Pro includes today; future Pro features are described as such. */
-const BENEFITS: { icon: IconName; key: 'benefitReport' | 'benefitFuture' | 'benefitSupport' }[] = [
+const BENEFITS: {
+  icon: IconName;
+  key: 'benefitReport' | 'benefitNoAds' | 'benefitFuture' | 'benefitSupport';
+}[] = [
   { icon: 'file-pdf-box', key: 'benefitReport' },
+  { icon: 'cancel', key: 'benefitNoAds' },
   { icon: 'gift-outline', key: 'benefitFuture' },
   { icon: 'heart-outline', key: 'benefitSupport' },
 ];

@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { configure } from '@testing-library/react-native';
+import type * as ReactModule from 'react';
+import type * as ReactNativeModule from 'react-native';
 import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 import { initI18n } from './src/core/i18n';
 import { useSettingsStore } from './src/features/settings/data/settingsStore';
@@ -50,6 +52,39 @@ jest.mock('react-native-iap', () => ({
   purchaseErrorListener: jest.fn(() => ({ remove: jest.fn() })),
 }));
 jest.mock('react-native-share', () => ({ __esModule: true, default: { open: jest.fn() } }));
+jest.mock('./src/core/native/NativeAppConfig', () => ({
+  __esModule: true,
+  default: { adBannerUnitId: () => 'ca-app-pub-3940256099942544/9214589741' },
+}));
+jest.mock('react-native-google-mobile-ads', () => {
+  const consent = { canRequestAds: false, privacyOptionsRequirementStatus: 'NOT_REQUIRED' };
+  return {
+    __esModule: true,
+    default: jest.fn(() => ({
+      initialize: jest.fn(() => Promise.resolve([])),
+      setRequestConfiguration: jest.fn(() => Promise.resolve()),
+    })),
+    AdsConsent: {
+      getConsentInfo: jest.fn(() => Promise.resolve(consent)),
+      requestInfoUpdate: jest.fn(() => Promise.resolve(consent)),
+      loadAndShowConsentFormIfRequired: jest.fn(() => Promise.resolve(consent)),
+      showPrivacyOptionsForm: jest.fn(() => Promise.resolve(consent)),
+    },
+    AdsConsentPrivacyOptionsRequirementStatus: {
+      REQUIRED: 'REQUIRED',
+      NOT_REQUIRED: 'NOT_REQUIRED',
+    },
+    MaxAdContentRating: { G: 'G' },
+    AgeRestrictedTreatment: { UNSPECIFIED: 'unspecified' },
+    BannerAdSize: { LARGE_ANCHORED_ADAPTIVE_BANNER: 'LARGE_ANCHORED_ADAPTIVE_BANNER' },
+    // Renders a marker so tests can see where a banner is mounted.
+    BannerAd: jest.fn(() => {
+      const { createElement } = jest.requireActual<typeof ReactModule>('react');
+      const { View } = jest.requireActual<typeof ReactNativeModule>('react-native');
+      return createElement(View, { testID: 'banner-ad' });
+    }),
+  };
+});
 jest.mock('./src/core/native/NativeKeepAwake', () => ({
   __esModule: true,
   default: { activate: jest.fn(), deactivate: jest.fn() },

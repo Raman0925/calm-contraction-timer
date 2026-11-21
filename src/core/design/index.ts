@@ -38,3 +38,4 @@ export type { StepperStep } from './components/Stepper';
 export { ChipChoice } from './components/ChipChoice';
 export type { ChipOption } from './components/ChipChoice';
 export { TextField } from './components/TextField';
+export { Divider } from './components/Divider';

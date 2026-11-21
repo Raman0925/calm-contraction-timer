@@ -26,6 +26,29 @@ errors are caught in one place and never affect the timer.
 `pro_unlock` (see `PRO_PRODUCT_ID` in `src/core/config.ts`), set its price, and activate it.
 Purchases can be tested with licence testers on the internal track.
 
+## Ads and consent
+
+Free users see one anchored adaptive banner at the bottom of History, never on the timer.
+On launch the app uses the consent stored from the last session, refreshes it with Google's
+User Messaging Platform (showing the form where required) and starts the Mobile Ads SDK only
+when ads may be requested. **Settings → Privacy options** appears where the law requires it.
+Requests are limited to G-rated content, and no contraction data or targeting keywords are
+sent. Pro users never start the consent flow or the SDK.
+
+The repository only contains Google's public **test** IDs. Debug builds always use them;
+release builds use real IDs only when the release workflow provides them:
+
+| Environment variable  | What it is                              |
+| --------------------- | --------------------------------------- |
+| `CCT_ADMOB_APP_ID`    | AdMob app ID (`ca-app-pub-…~…`)         |
+| `CCT_ADMOB_BANNER_ID` | AdMob banner ad unit (`ca-app-pub-…/…`) |
+
+**Play Console Data safety:** contraction data never leaves the phone except through exports
+the user shares. The free version's AdMob banner collects and shares, for advertising and
+fraud prevention: device or other IDs (advertising ID), approximate location, app interactions
+and diagnostics, as described in Google's AdMob data disclosure. Declare these in the Data
+safety form and keep it in step with [PRIVACY.md](PRIVACY.md).
+
 ## Privacy
 
 - All contraction data stays on your device. There is no backend and no account.
@@ -84,7 +107,7 @@ Paper imports outside the design system.
 4. ✅ History, session detail, charts, editing
 5. ✅ CSV/PDF export, settings, onboarding and disclaimer
 6. ✅ One-time Pro unlock
-7. Consent (UMP) and a single banner on History for free users
+7. ✅ Consent (UMP) and a single banner on History for free users
 8. Google Drive backup and restore (Pro)
 9. Live Update notifications, accessibility and performance passes, release pipeline
 

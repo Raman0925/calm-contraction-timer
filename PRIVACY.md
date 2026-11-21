@@ -15,8 +15,9 @@ stays on your phone.**
 - The data leaves your phone only when **you** export a CSV file or PDF report and share
   it through the Android share menu. The exported file is kept in the app's private cache
   only until your next export, **Delete all contractions**, or the next app start.
-- The app contains no analytics, advertising or tracking code and never sends contraction
-  data over the network.
+- The app contains no analytics. Contraction data is never sent over the network or passed to
+  the advertising or purchase services described below; the free version's ads do use the
+  advertising ID, as explained under Advertising.
 - Uninstalling the app, or using **Settings → Delete all contractions**, removes it from your
   phone.
 
@@ -24,6 +25,21 @@ stays on your phone.**
 
 Preferences such as theme, pattern setting and the phone numbers you save are stored on your
 phone only.
+
+## Advertising (free version)
+
+The free version shows one banner at the bottom of the History screen, never on the timer.
+Ads are served by Google AdMob. Where the law requires it (for example in the EEA and UK), the
+app asks for your consent first with Google's consent form, and you can change your choice at
+any time in **Settings → Privacy options**. Ads are limited to a general audience (rated G).
+
+AdMob may use your device's advertising ID, IP address and approximate location to serve and
+measure ads, as described in [Google's privacy policy](https://policies.google.com/privacy)
+and [how Google uses information from apps](https://policies.google.com/technologies/partner-sites).
+You can reset or delete the advertising ID in Android settings. The app does not allow the
+Android Privacy Sandbox to infer interests (Topics) or measure attribution from its use. Pro
+users see no ads: buying Pro removes the banner at once, and from the next launch the
+consent form and the ads SDK are not started at all.
 
 ## Purchases
 
@@ -43,8 +59,8 @@ The app is intended for adults and is not directed at children.
 
 ## Changes
 
-If a future version adds features that handle data differently (for example optional
-advertising or a cloud backup you start yourself), this policy will be updated
+If a future version adds features that handle data differently (for example a cloud backup
+you start yourself), this policy will be updated
 before that version is released. Changes to this policy are published in this file in the
 app's public repository, with the date at the top.
 

@@ -2,6 +2,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { Linking } from 'react-native';
+import { useAds } from '@core/ads/AdsProvider';
 import { AppText, ListRow } from '@core/design';
 import { PRIVACY_POLICY_URL, SOURCE_CODE_URL } from '@core/config';
 import { version } from '../../../../package.json';
@@ -16,6 +17,7 @@ function openUrl(url: string) {
 export function AboutSection() {
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const { privacyOptionsRequired, showPrivacyOptions } = useAds();
 
   return (
     <>
@@ -38,6 +40,15 @@ export function AboutSection() {
           openUrl(PRIVACY_POLICY_URL);
         }}
       />
+      {privacyOptionsRequired ? (
+        <ListRow
+          icon="cookie-settings-outline"
+          title={t('settings.privacyOptions')}
+          description={t('settings.privacyOptionsDescription')}
+          onPress={showPrivacyOptions}
+          testID="privacy-options"
+        />
+      ) : null}
       <ListRow
         icon="license"
         title={t('settings.licences')}
