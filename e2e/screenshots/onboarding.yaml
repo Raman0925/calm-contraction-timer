@@ -9,7 +9,7 @@ appId: com.calmcontractiontimer.app
 - extendedWaitUntil:
     visible: 'One tap to time'
     timeout: 15000
-- takeScreenshot: e2e/output/screenshots/06-onboarding
+- takeScreenshot: 06-onboarding
 - tapOn: 'Next'
 - tapOn: 'Next'
 - tapOn: 'I understand'

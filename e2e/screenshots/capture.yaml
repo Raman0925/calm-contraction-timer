@@ -16,7 +16,7 @@ appId: com.calmcontractiontimer.app
 - extendedWaitUntil:
     visible: 'Pattern matches.*'
     timeout: 15000
-- takeScreenshot: e2e/output/screenshots/01-timer-pattern
+- takeScreenshot: 01-timer-pattern
 
 # A contraction being timed.
 - extendedWaitUntil:
@@ -28,7 +28,7 @@ appId: com.calmcontractiontimer.app
 - extendedWaitUntil:
     visible: '00:4[0-9]'
     timeout: 60000
-- takeScreenshot: e2e/output/screenshots/02-timer-contracting
+- takeScreenshot: 02-timer-contracting
 # Stop after a full minute, so this contraction keeps the 5-1-1 pattern for later screens.
 - extendedWaitUntil:
     visible: '01:0[5-9]'
@@ -41,19 +41,20 @@ appId: com.calmcontractiontimer.app
 - extendedWaitUntil:
     visible: '.*contractions · Average.*'
     timeout: 10000
-- takeScreenshot: e2e/output/screenshots/03-history
+- takeScreenshot: 03-history
 # The newest session is listed first.
 - tapOn: '.*contractions · Average.*'
 - extendedWaitUntil:
     visible: 'Length of each contraction.*'
     timeout: 10000
-- takeScreenshot: e2e/output/screenshots/04-session
+- takeScreenshot: 04-session
 - scrollUntilVisible:
     element:
       text: 'Minutes between starts'
     direction: DOWN
-- takeScreenshot: e2e/output/screenshots/05-session-charts
-- back
+- takeScreenshot: 05-session-charts
+# Relaunch (keeps data) rather than pressing Back, which is less predictable.
+- launchApp
 
 # The night theme for 3 AM.
 - tapOn:
@@ -68,4 +69,4 @@ appId: com.calmcontractiontimer.app
 - extendedWaitUntil:
     visible: 'Pattern matches.*'
     timeout: 10000
-- takeScreenshot: e2e/output/screenshots/07-night
+- takeScreenshot: 07-night

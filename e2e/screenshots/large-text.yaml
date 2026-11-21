@@ -6,15 +6,15 @@ appId: com.calmcontractiontimer.app
 - extendedWaitUntil:
     visible: 'Pattern matches.*'
     timeout: 15000
-- takeScreenshot: e2e/output/screenshots/a11y-200-timer
+- takeScreenshot: a11y-200-timer
 - scrollUntilVisible:
     element:
       text: 'Recent contractions'
     direction: DOWN
-- takeScreenshot: e2e/output/screenshots/a11y-200-timer-scrolled
+- takeScreenshot: a11y-200-timer-scrolled
 - tapOn:
     id: 'tab-history'
-- takeScreenshot: e2e/output/screenshots/a11y-200-history
+- takeScreenshot: a11y-200-history
 - tapOn:
     id: 'tab-settings'
-- takeScreenshot: e2e/output/screenshots/a11y-200-settings
+- takeScreenshot: a11y-200-settings

@@ -9,6 +9,16 @@ APK=android/app/build/outputs/apk/release/app-release.apk
 OUT=e2e/output/screenshots
 mkdir -p "$OUT"
 
+# Maestro resolves takeScreenshot paths against the flow's folder. Gather the
+# images in one place even when a flow fails, so the artifact shows how far it got.
+collect() {
+  find . \( -path ./node_modules -o -path ./android -o -path ./e2e/output \) -prune \
+    -o -name '*.png' -newer "$APK" -exec mv -f {} "$OUT/" \; || true
+  ls -la "$OUT"
+}
+trap collect EXIT
+run_flow() { maestro test --debug-output "e2e/output/debug/$(basename "$1" .yaml)" "$1"; }
+
 adb root
 adb wait-for-device
 adb install -r "$APK"
@@ -23,7 +33,7 @@ demo network -e wifi show -e level 4 -e mobile hide
 demo notifications -e visible false
 
 # 1. Onboarding, which also creates the app's data folders.
-maestro test e2e/screenshots/onboarding.yaml
+run_flow e2e/screenshots/onboarding.yaml
 
 # 2. Replace the empty database with a realistic, made-up history.
 adb shell am force-stop "$PKG"
@@ -38,11 +48,9 @@ adb shell restorecon "$DB_DIR/contractions.db"
 
 # 3. No network, so no test ad appears in store screenshots.
 adb shell cmd connectivity airplane-mode enable
-maestro test e2e/screenshots/capture.yaml
+run_flow e2e/screenshots/capture.yaml
 
 # 4. Accessibility check (not for the store): the same screens at 200% text size.
 adb shell settings put system font_scale 2.0
-maestro test e2e/screenshots/large-text.yaml
+run_flow e2e/screenshots/large-text.yaml
 adb shell settings put system font_scale 1.0
-
-ls -la "$OUT"
