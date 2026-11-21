@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { render, screen } from '@testing-library/react-native';
+import { render, screen, waitFor } from '@testing-library/react-native';
 import { createTestServices } from '@features/timer/ui/testing/createTestServices';
 import { App } from './App';
 
@@ -15,6 +15,8 @@ describe('App', () => {
     const { services, notifier } = await createTestServices();
     await render(<App services={services} />);
     await screen.findByTestId('timer-screen');
-    expect(notifier.last).toBeNull();
+    await waitFor(() => {
+      expect(notifier.last).toBeNull();
+    });
   });
 });
