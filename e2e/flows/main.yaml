@@ -52,4 +52,4 @@ appId: com.calmcontractiontimer.app
 - tapOn: 'Doctor report \(PDF\).*'
 - assertVisible: 'Calm Contraction Timer Pro'
 - tapOn: 'Not now'
-- assertVisible: 'Export this session'
+- assertVisible: 'Spreadsheet (CSV)'
