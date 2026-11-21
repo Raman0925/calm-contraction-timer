@@ -2,7 +2,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStaticNavigation, type StaticParamList } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Icon, type IconName } from '@core/design';
+import { AppText, Icon, type IconName } from '@core/design';
 import { i18n } from '@core/i18n';
 import { ExportScreen } from '@features/export/ui/ExportScreen';
 import { HistoryScreen } from '@features/history/ui/HistoryScreen';
@@ -22,7 +22,19 @@ const tabIcon =
     <Icon name={name} color={color} size={size} />
   );
 
+/**
+ * The tab bar has a fixed height, so labels stop growing at 1.3× (like Android's own
+ * navigation bars) instead of running into the gesture area. Screen content scales fully.
+ */
+const TAB_LABEL_MAX_FONT_SCALE = 1.3;
+const tabLabel = ({ color, children }: { color: string; children: string }) => (
+  <AppText variant="labelMedium" style={{ color }} maxFontSizeMultiplier={TAB_LABEL_MAX_FONT_SCALE}>
+    {children}
+  </AppText>
+);
+
 const HomeTabs = createBottomTabNavigator({
+  screenOptions: { tabBarLabel: tabLabel },
   screens: {
     Timer: {
       screen: withScreenBoundary(TimerScreen),
