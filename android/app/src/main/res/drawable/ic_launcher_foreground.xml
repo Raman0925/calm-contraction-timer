@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Adaptive icon foreground, drawn from assets/brand/icon.svg (brand asset; see TRADEMARKS.md). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:fillColor="#B4ECEF" android:pathData="M54,58 L54,41 A17,17 0 0,1 68.72,49.5 Z" />
+    <path
+        android:pathData="M54,36 A22,22 0 1,1 54,80 A22,22 0 1,1 54,36 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="5" />
+    <path android:fillColor="#FFFFFF" android:pathData="M51,27 H57 A2,2 0 0,1 59,29 V30 A2,2 0 0,1 57,32 H51 A2,2 0 0,1 49,30 V29 A2,2 0 0,1 51,27 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M52.5,31 H55.5 V36 H52.5 Z" />
+    <path
+        android:pathData="M54,58 L65.3,51.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeWidth="3.5" />
+    <path android:fillColor="#FFFFFF" android:pathData="M54,55 A3,3 0 1,1 54,61 A3,3 0 1,1 54,55 Z" />
+</vector>

@@ -16,7 +16,8 @@
     "verify": "npm run format:check && npm run lint && npm run typecheck && npm run check:spdx && npm run test:ci",
     "db:generate": "drizzle-kit generate",
     "postinstall": "node scripts/generate-licences.mjs",
-    "licenses:generate": "node scripts/generate-licences.mjs"
+    "licenses:generate": "node scripts/generate-licences.mjs",
+    "brand:render": "node scripts/render-brand.mjs"
   },
   "dependencies": {
     "@op-engineering/op-sqlite": "^19.0.5",
@@ -58,6 +59,7 @@
     "@react-native/jest-preset": "0.88.1",
     "@react-native/metro-config": "0.88.1",
     "@react-native/typescript-config": "0.88.1",
+    "@resvg/resvg-js": "^2.6.2",
     "@testing-library/react-native": "^14.1.0",
     "@types/jest": "^29.5.13",
     "@types/react": "^19.2.0",
