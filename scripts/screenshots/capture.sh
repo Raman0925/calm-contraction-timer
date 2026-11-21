@@ -19,9 +19,19 @@ collect() {
 }
 trap collect EXIT
 # The demo status bar clock is frozen, so set it to the emulator's time before each flow.
+# The CI emulator sometimes drops its adb connection for a moment, so a flow gets one retry.
 run_flow() {
-  demo clock -e hhmm "$(adb shell date +%H%M | tr -d '\r')"
-  maestro test --debug-output "e2e/output/debug/$(basename "$1" .yaml)" "$1"
+  local name
+  name=$(basename "$1" .yaml)
+  for attempt in 1 2; do
+    adb wait-for-device
+    demo clock -e hhmm "$(adb shell date +%H%M | tr -d '\r')"
+    if maestro test --debug-output "e2e/output/debug/$name-$attempt" "$1"; then
+      return 0
+    fi
+    echo "Flow $name failed (attempt $attempt)." >&2
+  done
+  return 1
 }
 
 adb root
