@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/Raman0925/calm-contraction-timer/compare/v0.2.1...v0.2.2) (2026-11-21)
+
+
+### Bug Fixes
+
+* **release:** attach only the bundle and mapping to the GitHub Release ([#15](https://github.com/Raman0925/calm-contraction-timer/issues/15)) ([3c504be](https://github.com/Raman0925/calm-contraction-timer/commit/3c504be9f33b5edfa2133ca96d2d14a77ab0b5da))
+
 ## [0.2.1](https://github.com/Raman0925/calm-contraction-timer/compare/v0.2.0...v0.2.1) (2026-11-21)
 
 
