@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppButton, AppDialog, AppText } from '@core/design';
+import { useBackupFiles } from '@features/backup/ui/BackupServices';
 import { useFileSharer } from '@features/export/ui/ExportServices';
 import { useTimerServices } from '@features/timer/ui/TimerServices';
 
@@ -10,12 +11,13 @@ export function DataSection() {
   const { t } = useTranslation();
   const { repository } = useTimerServices();
   const sharer = useFileSharer();
+  const backupFiles = useBackupFiles();
   const [confirming, setConfirming] = useState(false);
   const [deleted, setDeleted] = useState(false);
 
   const deleteAll = () => {
     setConfirming(false);
-    Promise.all([repository.removeAll(), sharer.clearExports()])
+    Promise.all([repository.removeAll(), sharer.clearExports(), backupFiles.clearTemporaryFiles()])
       .then(() => {
         setDeleted(true);
       })

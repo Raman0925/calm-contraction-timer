@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Screen } from '@core/design';
+import { BackupSection } from '@features/backup/ui/BackupSection';
 import { AboutSection } from './AboutSection';
 import { AppearanceSection } from './AppearanceSection';
 import { ContactsSection } from './ContactsSection';
@@ -17,6 +18,7 @@ export function SettingsScreen() {
       <ContactsSection />
       <AppearanceSection />
       <ProSection />
+      <BackupSection />
       <DataSection />
       <AboutSection />
     </Screen>

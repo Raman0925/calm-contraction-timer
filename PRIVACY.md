@@ -12,9 +12,14 @@ stays on your phone.**
   phone.
 - The app has no server and no account. The developers never receive your data.
 - Android backup and device-to-device transfer are switched off for this data.
-- The data leaves your phone only when **you** export a CSV file or PDF report and share
-  it through the Android share menu. The exported file is kept in the app's private cache
-  only until your next export, **Delete all contractions**, or the next app start.
+- The data leaves your phone only when **you** export a CSV file or PDF report through the
+  Android share menu, or save a **backup file** (Pro) to a place you choose, such as Google
+  Drive or Downloads. The app never uploads anything itself; the file goes only where you
+  send it, and is then looked after by that app or service. Temporary copies in the app's
+  private cache are removed after each export or backup, on **Delete all contractions** and
+  at the next app start.
+- A backup file contains your contractions and notes in plain JSON, so keep it private.
+  Restoring it replaces the contractions on the phone after you confirm.
 - The app contains no analytics. Contraction data is never sent over the network or passed to
   the advertising or purchase services described below; the free version's ads do use the
   advertising ID, as explained under Advertising.
@@ -59,10 +64,9 @@ The app is intended for adults and is not directed at children.
 
 ## Changes
 
-If a future version adds features that handle data differently (for example a cloud backup
-you start yourself), this policy will be updated
-before that version is released. Changes to this policy are published in this file in the
-app's public repository, with the date at the top.
+If a future version handles data differently, this policy will be updated before that
+version is released. Changes to this policy are published in this file in the app's public
+repository, with the date at the top.
 
 ## Contact
 

@@ -28,6 +28,7 @@ jest.mock('react-native-blob-util', () => ({
       exists: jest.fn(() => Promise.resolve(false)),
       mkdir: jest.fn(),
       unlink: jest.fn(),
+      readFile: jest.fn(),
     },
   },
 }));
@@ -50,6 +51,14 @@ jest.mock('react-native-iap', () => ({
   finishTransaction: jest.fn(() => Promise.resolve()),
   purchaseUpdatedListener: jest.fn(() => ({ remove: jest.fn() })),
   purchaseErrorListener: jest.fn(() => ({ remove: jest.fn() })),
+}));
+jest.mock('@react-native-documents/picker', () => ({
+  errorCodes: { OPERATION_CANCELED: 'OPERATION_CANCELED' },
+  isErrorWithCode: (error: unknown) =>
+    typeof error === 'object' && error !== null && 'code' in error,
+  types: { allFiles: '*/*' },
+  pick: jest.fn(),
+  saveDocuments: jest.fn(),
 }));
 jest.mock('react-native-share', () => ({ __esModule: true, default: { open: jest.fn() } }));
 jest.mock('./src/core/native/NativeAppConfig', () => ({

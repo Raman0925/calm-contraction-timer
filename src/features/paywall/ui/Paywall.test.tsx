@@ -23,7 +23,7 @@ describe('Paywall', () => {
     await openPaywall(new FakeBilling());
     expect(await screen.findByRole('button', { name: 'Unlock Pro for ₹249.00' })).toBeEnabled();
     expect(screen.getByText(/one-time purchase. No subscription/)).toBeOnTheScreen();
-    expect(screen.getByText(/Future Pro features, such as backup/)).toBeOnTheScreen();
+    expect(screen.getByText(/Back up to a file and restore it/)).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: 'Not now' })).toBeOnTheScreen();
   });
 

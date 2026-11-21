@@ -7,14 +7,14 @@ import { AppButton, AppText, ListRow, Screen, useAppTheme, type IconName } from 
 import type { BillingErrorKind } from '../domain/entitlement';
 import { usePro } from './ProServices';
 
-/** Only what Pro includes today; future Pro features are described as such. */
+/** What Pro includes today. */
 const BENEFITS: {
   icon: IconName;
-  key: 'benefitReport' | 'benefitNoAds' | 'benefitFuture' | 'benefitSupport';
+  key: 'benefitReport' | 'benefitBackup' | 'benefitNoAds' | 'benefitSupport';
 }[] = [
   { icon: 'file-pdf-box', key: 'benefitReport' },
   { icon: 'cancel', key: 'benefitNoAds' },
-  { icon: 'gift-outline', key: 'benefitFuture' },
+  { icon: 'file-restore-outline', key: 'benefitBackup' },
   { icon: 'heart-outline', key: 'benefitSupport' },
 ];
 
