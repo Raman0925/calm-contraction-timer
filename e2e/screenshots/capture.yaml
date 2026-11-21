@@ -33,11 +33,17 @@ appId: com.calmcontractiontimer.app
 - takeScreenshot: 02-timer-contracting
 # Stop after a full minute, so this contraction keeps the 5-1-1 pattern for later screens.
 # Match the running timer by id: the recent list also shows times like 01:07.
+# Short steps: one long wait ended early on CI, well before its timeout.
+- extendedWaitUntil:
+    visible:
+      id: 'live-timer'
+      text: '.*: 00:5[5-9]'
+    timeout: 30000
 - extendedWaitUntil:
     visible:
       id: 'live-timer'
       text: '.*: 01:0[5-9]'
-    timeout: 60000
+    timeout: 30000
 - tapOn: 'Stop'
 
 # History and a session with its charts.
