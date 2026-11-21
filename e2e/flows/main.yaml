@@ -51,5 +51,9 @@ appId: com.calmcontractiontimer.app
 # The PDF report is Pro: it opens the paywall, which must work even without Google Play.
 - tapOn: 'Doctor report \(PDF\).*'
 - assertVisible: 'Calm Contraction Timer Pro'
+- scrollUntilVisible:
+    element:
+      text: 'Not now'
+    direction: DOWN
 - tapOn: 'Not now'
 - assertVisible: 'Spreadsheet (CSV)'
