@@ -3,6 +3,7 @@ android/
 coverage/
 package-lock.json
 CHANGELOG.md
+.release-please-manifest.json
 LICENSE
 NOTICE
 CODE_OF_CONDUCT.md
