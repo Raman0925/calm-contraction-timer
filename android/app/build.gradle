@@ -11,13 +11,27 @@ def (versionMajor, versionMinor, versionPatch) = appVersionName.tokenize(".-")[0
 // Without it, release builds are signed with the debug key for local and end-to-end testing;
 // Google Play rejects those, so they can never be published by mistake.
 def uploadStoreFile = System.getenv("CCT_UPLOAD_STORE_FILE") ?: null
-def uploadSecrets = ["CCT_UPLOAD_STORE_FILE", "CCT_UPLOAD_STORE_PASSWORD", "CCT_UPLOAD_KEY_ALIAS", "CCT_UPLOAD_KEY_PASSWORD"]
-// The release workflow sets CCT_REQUIRE_UPLOAD_KEY=true, so a missing or empty secret fails the
-// build instead of silently producing a debug-signed bundle.
+def uploadSecrets = [
+    "CCT_UPLOAD_STORE_FILE", "CCT_UPLOAD_STORE_PASSWORD", "CCT_UPLOAD_KEY_ALIAS", "CCT_UPLOAD_KEY_PASSWORD",
+    "CCT_ADMOB_APP_ID", "CCT_ADMOB_BANNER_ID",
+]
+
+// Google's public test ads. Debug builds always use them; release builds use the real IDs
+// only when the release workflow provides them, so the repository never contains real IDs.
+def testAdMobAppId = "ca-app-pub-3940256099942544~3347511713"
+def testBannerUnitId = "ca-app-pub-3940256099942544/9214589741"
+def releaseAdMobAppId = System.getenv("CCT_ADMOB_APP_ID") ?: testAdMobAppId
+def releaseBannerUnitId = System.getenv("CCT_ADMOB_BANNER_ID") ?: testBannerUnitId
+// Real app ID with a test unit (or the reverse) would ship broken ads: require both or neither.
+if (!System.getenv("CCT_ADMOB_APP_ID") != !System.getenv("CCT_ADMOB_BANNER_ID")) {
+    throw new GradleException("Set both CCT_ADMOB_APP_ID and CCT_ADMOB_BANNER_ID, or neither")
+}
+// The release workflow sets CCT_REQUIRE_UPLOAD_KEY=true, so a missing or empty secret (signing
+// key or AdMob ID) fails the build instead of producing a debug-signed bundle or one with test ads.
 if (System.getenv("CCT_REQUIRE_UPLOAD_KEY") == "true") {
     def missing = uploadSecrets.findAll { !System.getenv(it) }
     if (!missing.isEmpty()) {
-        throw new GradleException("Release signing requires ${missing.join(', ')}")
+        throw new GradleException("A Play release requires ${missing.join(", ")}")
     }
 }
 
@@ -37,6 +51,10 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode versionMajor * 1_000_000 + versionMinor * 1_000 + versionPatch
         versionName appVersionName
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 
     signingConfigs {
@@ -59,9 +77,13 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            manifestPlaceholders += [adMobAppId: testAdMobAppId]
+            buildConfigField "String", "AD_BANNER_UNIT_ID", "\"${testBannerUnitId}\""
         }
         release {
             signingConfig uploadStoreFile ? signingConfigs.release : signingConfigs.debug
+            manifestPlaceholders += [adMobAppId: releaseAdMobAppId]
+            buildConfigField "String", "AD_BANNER_UNIT_ID", "\"${releaseBannerUnitId}\""
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"

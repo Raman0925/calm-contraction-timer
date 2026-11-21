@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.calmcontractiontimer.app
 
+import com.calmcontractiontimer.app.config.AppConfigModule
 import com.calmcontractiontimer.app.keepawake.KeepAwakeModule
 import com.facebook.react.BaseReactPackage
 import com.facebook.react.bridge.NativeModule
@@ -14,11 +15,12 @@ class AppPackage : BaseReactPackage() {
   override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? =
       when (name) {
         KeepAwakeModule.NAME -> KeepAwakeModule(reactContext)
+        AppConfigModule.NAME -> AppConfigModule(reactContext)
         else -> null
       }
 
   override fun getReactModuleInfoProvider() = ReactModuleInfoProvider {
-    listOf(KeepAwakeModule.NAME).associateWith { name ->
+    listOf(KeepAwakeModule.NAME, AppConfigModule.NAME).associateWith { name ->
       ReactModuleInfo(
           name = name,
           className = name,
