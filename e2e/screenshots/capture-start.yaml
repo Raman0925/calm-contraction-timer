@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: Apache-2.0
+# Store screenshots, part 1, from the seeded history (see scripts/screenshots/capture.sh).
+appId: com.calmcontractiontimer.app
+---
+- launchApp
+# The emulator runs on UTC, where automatic night mode may already be on: start in Light.
+- tapOn:
+    id: 'tab-settings'
+- scrollUntilVisible:
+    element:
+      text: 'Light'
+    direction: DOWN
+- tapOn: 'Light'
+- tapOn:
+    id: 'tab-timer'
+- extendedWaitUntil:
+    visible: 'Pattern matches.*'
+    timeout: 15000
+- takeScreenshot: 01-timer-pattern
+
+# A contraction being timed.
+- extendedWaitUntil:
+    visible:
+      text: 'Start'
+      enabled: true
+    timeout: 10000
+- tapOn: 'Start'

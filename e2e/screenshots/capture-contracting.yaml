@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+# Store screenshots, part 2, from the seeded history (see scripts/screenshots/capture.sh).
+appId: com.calmcontractiontimer.app
+---
+# capture.sh waits about 40 s after Start before running this.
+- assertVisible:
+    id: 'live-timer'
+- takeScreenshot: 02-timer-contracting

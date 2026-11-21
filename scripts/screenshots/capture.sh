@@ -49,7 +49,13 @@ adb shell restorecon "$DB_DIR/contractions.db"
 
 # 3. No network, so no test ad appears in store screenshots.
 adb shell cmd connectivity airplane-mode enable
-run_flow e2e/screenshots/capture.yaml
+# Maestro's waits on the ticking timer proved unreliable on CI, so the shell
+# waits between flows instead: a screenshot at about 45 s, Stop after over a minute.
+run_flow e2e/screenshots/capture-start.yaml
+sleep 38
+run_flow e2e/screenshots/capture-contracting.yaml
+sleep 22
+run_flow e2e/screenshots/capture-finish.yaml
 
 # 4. Accessibility check (not for the store): the same screens at 200% text size.
 adb shell settings put system font_scale 2.0
