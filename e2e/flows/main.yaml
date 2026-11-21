@@ -31,7 +31,11 @@ appId: com.calmcontractiontimer.app
       text: 'Start'
       enabled: true
     timeout: 10000
-- assertVisible: 'Recent contractions'
+# On small screens the list sits below the fold.
+- scrollUntilVisible:
+    element:
+      text: 'Recent contractions'
+    direction: DOWN
 - tapOn: 'History'
 - tapOn: '.*3 contractions.*'
 - assertVisible: 'Contractions'
