@@ -9,11 +9,12 @@ APK=android/app/build/outputs/apk/release/app-release.apk
 OUT=e2e/output/screenshots
 mkdir -p "$OUT"
 
-# Maestro resolves takeScreenshot paths against the flow's folder. Gather the
-# images in one place even when a flow fails, so the artifact shows how far it got.
+# Maestro may write takeScreenshot images next to the flow or into its debug
+# output. Gather them in one place even when a flow fails.
 collect() {
-  find . \( -path ./node_modules -o -path ./android -o -path ./e2e/output \) -prune \
-    -o -name '*.png' -newer "$APK" -exec mv -f {} "$OUT/" \; || true
+  find . \( -path ./node_modules -o -path ./android -o -path "./$OUT" \) -prune \
+    -o \( -name '[0-9][0-9]-*.png' -o -name 'a11y-200-*.png' \) -newer "$APK" \
+    -exec cp -f {} "$OUT/" \; || true
   ls -la "$OUT"
 }
 trap collect EXIT
