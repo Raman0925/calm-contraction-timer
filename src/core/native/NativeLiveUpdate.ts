@@ -5,11 +5,12 @@ import { TurboModuleRegistry } from 'react-native';
 /** Codegen spec for the LiveUpdate TurboModule (android/.../LiveUpdateModule.kt). */
 export interface Spec extends TurboModule {
   /**
-   * Asks Android 16+ to show the ongoing notification in `channelId` as a Live
-   * Update (status-bar chip and top of the shade), with `shortText` in the chip.
-   * Resolves false when unsupported, not allowed by the user, or not found.
+   * Asks Android 16+ to show the ongoing notification in `channelId` that was
+   * posted with timestamp `postedWhen` as a Live Update (status-bar chip and top
+   * of the shade), with `shortText` in the chip. Resolves false when unsupported,
+   * not allowed by the user, or not found.
    */
-  promote(channelId: string, shortText: string): Promise<boolean>;
+  promote(channelId: string, shortText: string, postedWhen: number): Promise<boolean>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('LiveUpdate');

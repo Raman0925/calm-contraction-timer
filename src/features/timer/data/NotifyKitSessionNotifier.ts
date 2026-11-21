@@ -42,6 +42,7 @@ export const notifyKitSessionNotifier: SessionNotifier = {
     }
     const channelId = await ensureChannel();
     const contracting = state.kind === 'contracting';
+    const timestamp = contracting ? state.startedAt : state.lastStartedAt;
     await notifee.displayNotification({
       id: NOTIFICATION_ID,
       title: i18n.t(contracting ? 'notification.contractingTitle' : 'notification.restingTitle'),
@@ -55,7 +56,7 @@ export const notifyKitSessionNotifier: SessionNotifier = {
         autoCancel: false,
         onlyAlertOnce: true,
         showChronometer: true,
-        timestamp: contracting ? state.startedAt : state.lastStartedAt,
+        timestamp,
         timeoutAfter: contracting ? undefined : Math.max(1, state.endsAt - now),
         pressAction: { id: 'default', launchActivity: 'default' },
         actions: [
@@ -70,6 +71,7 @@ export const notifyKitSessionNotifier: SessionNotifier = {
       .promote(
         channelId,
         i18n.t(contracting ? 'notification.chipContraction' : 'notification.chipResting'),
+        timestamp,
       )
       .catch((error: unknown) => {
         console.warn('Live Update promotion failed', error);

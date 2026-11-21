@@ -31,7 +31,7 @@ describe('notifyKitSessionNotifier', () => {
 
   it('asks Android 16+ to show it as a Live Update with a short chip text', async () => {
     await notifyKitSessionNotifier.render({ kind: 'contracting', startedAt: T0 }, T0);
-    expect(NativeLiveUpdate.promote).toHaveBeenLastCalledWith('session', 'Contraction');
+    expect(NativeLiveUpdate.promote).toHaveBeenLastCalledWith('session', 'Contraction', T0);
   });
 
   it('still shows the notification when Live Update promotion fails', async () => {
