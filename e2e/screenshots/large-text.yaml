@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: Apache-2.0
+# Accessibility check at 200% text size; screenshots are reviewed, not published.
+appId: com.calmcontractiontimer.app
+---
+- launchApp
+- extendedWaitUntil:
+    visible: 'Pattern matches.*'
+    timeout: 15000
+- takeScreenshot: e2e/output/screenshots/a11y-200-timer
+- scrollUntilVisible:
+    element:
+      text: 'Recent contractions'
+    direction: DOWN
+- takeScreenshot: e2e/output/screenshots/a11y-200-timer-scrolled
+- tapOn:
+    id: 'tab-history'
+- takeScreenshot: e2e/output/screenshots/a11y-200-history
+- tapOn:
+    id: 'tab-settings'
+- takeScreenshot: e2e/output/screenshots/a11y-200-settings

@@ -26,15 +26,27 @@ const HomeTabs = createBottomTabNavigator({
   screens: {
     Timer: {
       screen: withScreenBoundary(TimerScreen),
-      options: () => ({ title: i18n.t('tabs.timer'), tabBarIcon: tabIcon('timer-outline') }),
+      options: () => ({
+        title: i18n.t('tabs.timer'),
+        tabBarIcon: tabIcon('timer-outline'),
+        tabBarButtonTestID: 'tab-timer',
+      }),
     },
     History: {
       screen: withScreenBoundary(HistoryScreen),
-      options: () => ({ title: i18n.t('tabs.history'), tabBarIcon: tabIcon('history') }),
+      options: () => ({
+        title: i18n.t('tabs.history'),
+        tabBarIcon: tabIcon('history'),
+        tabBarButtonTestID: 'tab-history',
+      }),
     },
     Settings: {
       screen: withScreenBoundary(SettingsScreen),
-      options: () => ({ title: i18n.t('tabs.settings'), tabBarIcon: tabIcon('cog-outline') }),
+      options: () => ({
+        title: i18n.t('tabs.settings'),
+        tabBarIcon: tabIcon('cog-outline'),
+        tabBarButtonTestID: 'tab-settings',
+      }),
     },
   },
 });

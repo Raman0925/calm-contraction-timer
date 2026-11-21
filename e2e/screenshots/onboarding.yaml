@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Store screenshot of the first onboarding card, then finishes onboarding.
+appId: com.calmcontractiontimer.app
+---
+- launchApp:
+    clearState: true
+    permissions:
+      notifications: allow
+- extendedWaitUntil:
+    visible: 'One tap to time'
+    timeout: 15000
+- takeScreenshot: e2e/output/screenshots/06-onboarding
+- tapOn: 'Next'
+- tapOn: 'Next'
+- tapOn: 'I understand'
+- extendedWaitUntil:
+    visible: 'Start'
+    timeout: 10000

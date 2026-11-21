@@ -1,0 +1,67 @@
+# SPDX-License-Identifier: Apache-2.0
+# Store screenshots from the seeded history (see scripts/screenshots/capture.sh).
+appId: com.calmcontractiontimer.app
+---
+- launchApp
+# The emulator runs on UTC, where automatic night mode may already be on: start in Light.
+- tapOn:
+    id: 'tab-settings'
+- scrollUntilVisible:
+    element:
+      text: 'Light'
+    direction: DOWN
+- tapOn: 'Light'
+- tapOn:
+    id: 'tab-timer'
+- extendedWaitUntil:
+    visible: 'Pattern matches.*'
+    timeout: 15000
+- takeScreenshot: e2e/output/screenshots/01-timer-pattern
+
+# A contraction being timed.
+- extendedWaitUntil:
+    visible:
+      text: 'Start'
+      enabled: true
+    timeout: 10000
+- tapOn: 'Start'
+- extendedWaitUntil:
+    visible: '00:4[0-9]'
+    timeout: 60000
+- takeScreenshot: e2e/output/screenshots/02-timer-contracting
+- tapOn: 'Stop'
+
+# History and a session with its charts.
+- tapOn:
+    id: 'tab-history'
+- extendedWaitUntil:
+    visible: '.*contractions · Average.*'
+    timeout: 10000
+- takeScreenshot: e2e/output/screenshots/03-history
+# The newest session is listed first.
+- tapOn: '.*contractions · Average.*'
+- extendedWaitUntil:
+    visible: 'Length of each contraction.*'
+    timeout: 10000
+- takeScreenshot: e2e/output/screenshots/04-session
+- scrollUntilVisible:
+    element:
+      text: 'Minutes between starts'
+    direction: DOWN
+- takeScreenshot: e2e/output/screenshots/05-session-charts
+- back
+
+# The night theme for 3 AM.
+- tapOn:
+    id: 'tab-settings'
+- scrollUntilVisible:
+    element:
+      text: 'Night \(true black, dim\)'
+    direction: DOWN
+- tapOn: 'Night \(true black, dim\)'
+- tapOn:
+    id: 'tab-timer'
+- extendedWaitUntil:
+    visible: 'Pattern matches.*'
+    timeout: 10000
+- takeScreenshot: e2e/output/screenshots/07-night
