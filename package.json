@@ -20,7 +20,7 @@
     "brand:render": "node scripts/render-brand.mjs"
   },
   "dependencies": {
-    "@op-engineering/op-sqlite": "^19.0.5",
+    "@op-engineering/op-sqlite": "^19.0.6",
     "@react-native-documents/picker": "^12.1.0",
     "@react-native-vector-icons/material-design-icons": "^14.0.0",
     "@react-navigation/bottom-tabs": "^7.22.0",
